@@ -1,21 +1,27 @@
-#include <iostream>
-#include <memory>
 #include "MessageHandler.h"
 #include "WindowsWindow.h"
+#include <iostream>
+#include <memory>
+
+#include "GraphicsDevice.h"
+#include "Renderer.h"
 
 int main() {
-	constexpr int width=800, height=600;
-	bool quitRequest = 0;
-	WindowsWindow window;
+    constexpr int width = 800, height = 600;
+    bool quitRequest = 0;
+    WindowsWindow window;
 
-	std::shared_ptr<MessageHandler> msgHandler = std::make_shared<MessageHandler>(quitRequest);
+    auto msgHandler = std::make_shared<MessageHandler>(quitRequest);
+    auto graphicsDevice = std::make_unique<GraphicsDevice>();
 
-	window.Init(msgHandler, width, height);
-	window.Show();
+    window.Init(msgHandler, width, height);
 
-	while (!quitRequest) {
-		window.PumpMessage();
-	}
+    auto renderer = graphicsDevice->InitAndCreateRenderer(window.GetHandle(),
+                                                          width, height);
+    window.Show();
+    while (!quitRequest) {
+        window.PumpMessage();
+    }
 
-	return 0;
+    return 0;
 }

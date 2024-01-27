@@ -5,6 +5,15 @@
     <ClCompile Include="WindowsWindow.cpp">
       <Filter>back</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>back</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsDevice.cpp">
+      <Filter>back</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationBase.cpp">
+      <Filter>back</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="back">
@@ -18,5 +27,20 @@
     <ClInclude Include="MessageHandler.h">
       <Filter>back</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>back</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsDevice.h">
+      <Filter>back</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d11wrapper.h">
+      <Filter>back</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationBase.h">
+      <Filter>back</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.clang-format" />
   </ItemGroup>
 </Project>
