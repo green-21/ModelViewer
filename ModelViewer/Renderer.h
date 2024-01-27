@@ -11,13 +11,16 @@ public:
         : context(context), swapChain(swapChain),
           renderTargetView(renderTargetView),
           depthStencilBuffer(depthStencilBuffer),
-          depthStencilView(depthStencilView) {}
+          depthStencilView(depthStencilView) {
 
-    void
-    SetGraphicsPipelineStateObject(const GraphicsPipelineStateObject &pso) {
-        this->pso = pso;
+        context->OMSetRenderTargets(1, renderTargetView.GetAddressOf(),
+                                      depthStencilView.Get());
     }
 
+    void SetViewport(int width, int height);
+    void SetPipelineState(const GraphicsPipelineStateObject &pso);
+    void ClearScreen();
+    void Draw(GraphicsBuffer buffer);
     void Present() { swapChain->Present(1, 0); }
 
 private:

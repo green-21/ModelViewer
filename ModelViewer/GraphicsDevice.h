@@ -22,6 +22,18 @@ public:
 
     RenderTargetView CreateRenderTargetView(Texture2D buffer);
 
+    VertexShader CreateVertexShader(const D3DBlob shaderBlob);
+    InputLayout
+    CreateInputLayout(const D3DBlob shaderBlob,
+                      std::vector<D3D11_INPUT_ELEMENT_DESC> &inputElements);
+    PixelShader CreatePixelShader(const D3DBlob shaderBlob);
+
+    SamplerState CreateSamplerState(D3D11_SAMPLER_DESC &desc);
+
+    RasterizerState CreateRasterizerState(D3D11_RASTERIZER_DESC &desc);
+
+    GraphicsBuffer CreateGraphicsBuffer(D3D11_BUFFER_DESC &desc, const void * data);
+
 private:
     int width, height;
     Device device;

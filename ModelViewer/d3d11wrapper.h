@@ -1,15 +1,25 @@
 #pragma once
 
-#include <d3d11.h>
-#include <d3dcompiler.h>
-#include <dxgi.h>
+#include <exception>
 
 #include <Windows.h>
 #include <wrl.h>
 
-using Microsoft::WRL::ComPtr;
+#include <d3d11.h>
+#include <d3dcompiler.h>
+#include <dxgi.h>
+
+#include <directxtk/SimpleMath.h>
 
 // 향후 wrapper나 다른 구현으로 변화해야한다면 여기에 추가하자.
+using Microsoft::WRL::ComPtr;
+using DirectX::SimpleMath::Matrix;
+using DirectX::SimpleMath::Vector3;
+
+struct Vertex {
+    Vector3 position;
+    Vector3 color;
+};
 
 // device
 using Device = ComPtr<ID3D11Device>;
@@ -41,6 +51,7 @@ using RasterizerState = ComPtr<ID3D11RasterizerState>;
 using SamplerState = ComPtr<ID3D11SamplerState>;
 
 // etc
+using D3DBlob = ComPtr<ID3DBlob>;
 
 inline void ThrowIfFailed(HRESULT hr) {
     if (FAILED(hr)) {

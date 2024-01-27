@@ -56,7 +56,7 @@ GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
         return nullptr;
     }
 
-    CreateRenderTargetView(backBuffer);
+    renderTargetView = CreateRenderTargetView(backBuffer);
 
     // TODO: 해당 함수에서 분리할 수 있는 방법을 고려
     D3D11_TEXTURE2D_DESC dsDesc{};
@@ -106,4 +106,61 @@ RenderTargetView GraphicsDevice::CreateRenderTargetView(Texture2D buffer) {
     ThrowIfFailed(device->CreateRenderTargetView(buffer.Get(), nullptr,
                                                  rtv.GetAddressOf()));
     return rtv;
+}
+
+VertexShader GraphicsDevice::CreateVertexShader(const D3DBlob shaderBlob) {
+    VertexShader vs;
+    ThrowIfFailed(device->CreateVertexShader(shaderBlob->GetBufferPointer(),
+                                             shaderBlob->GetBufferSize(),
+                                             nullptr, vs.GetAddressOf()));
+    return vs;
+}
+
+InputLayout GraphicsDevice::CreateInputLayout(
+    const D3DBlob shaderBlob,
+    std::vector<D3D11_INPUT_ELEMENT_DESC> &inputElements) {
+    InputLayout il;
+    ThrowIfFailed(device->CreateInputLayout(
+        inputElements.data(), inputElements.size(),
+        shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(),
+        il.GetAddressOf()));
+
+    return il;
+}
+
+PixelShader GraphicsDevice::CreatePixelShader(const D3DBlob shaderBlob) {
+    PixelShader ps;
+    ThrowIfFailed(device->CreatePixelShader(shaderBlob->GetBufferPointer(),
+                                            shaderBlob->GetBufferSize(),
+                                            nullptr, ps.GetAddressOf()));
+    return ps;
+}
+
+SamplerState GraphicsDevice::CreateSamplerState(D3D11_SAMPLER_DESC &desc) {
+    SamplerState state;
+    ThrowIfFailed(device->CreateSamplerState(&desc, state.GetAddressOf()));
+
+    return state;
+}
+
+RasterizerState
+GraphicsDevice::CreateRasterizerState(D3D11_RASTERIZER_DESC &desc) {
+    RasterizerState state;
+    ThrowIfFailed(device->CreateRasterizerState(&desc, state.GetAddressOf()));
+
+    return state;
+}
+
+GraphicsBuffer GraphicsDevice::CreateGraphicsBuffer(D3D11_BUFFER_DESC &desc,
+                                                    const void *data) {
+    GraphicsBuffer buffer;
+    D3D11_SUBRESOURCE_DATA subResourceData{};
+    subResourceData.pSysMem = data;
+    subResourceData.SysMemPitch = 0;
+    subResourceData.SysMemSlicePitch = 0;
+
+    ThrowIfFailed(
+        device->CreateBuffer(&desc, &subResourceData, buffer.GetAddressOf()));
+
+    return buffer;
 }
