@@ -64,7 +64,7 @@ int WindowsWindow::Init(std::shared_ptr<MessageHandler> handler, int width,
 
 int WindowsWindow::Show() {
     if (!window)
-        - 1;
+        return - 1;
 
     ShowWindow(this->window, SW_SHOWDEFAULT);
     UpdateWindow(this->window);
