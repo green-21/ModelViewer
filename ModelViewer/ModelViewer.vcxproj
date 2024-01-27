@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="ApplicationBase.h" />
     <ClInclude Include="d3d11wrapper.h" />
+    <ClInclude Include="FileIO.h" />
     <ClInclude Include="GraphicsPipelineStateObject.h" />
     <ClInclude Include="MainApp.h" />
     <ClInclude Include="Renderer.h" />

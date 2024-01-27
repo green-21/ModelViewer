@@ -15,12 +15,12 @@ public:
     std::unique_ptr<Renderer> InitAndCreateRenderer(HWND windowHandle,
                                                     int width, int height);
 
-    DepthStencilView CreateDepthStencilView(Texture2D buffer);
+    DepthStencilView CreateDepthStencilView(TextureBuffer2D buffer);
 
-    Texture2D CreateTexture2D(D3D11_TEXTURE2D_DESC &desc,
+    TextureBuffer2D CreateTexture2D(D3D11_TEXTURE2D_DESC &desc,
                               const D3D11_SUBRESOURCE_DATA *pInitialData);
 
-    RenderTargetView CreateRenderTargetView(Texture2D buffer);
+    RenderTargetView CreateRenderTargetView(TextureBuffer2D buffer);
 
     VertexShader CreateVertexShader(const D3DBlob shaderBlob);
     InputLayout

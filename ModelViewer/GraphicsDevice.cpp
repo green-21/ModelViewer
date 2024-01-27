@@ -37,7 +37,7 @@ GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
     SwapChain swapChain;
     RenderTargetView renderTargetView;
     DepthStencilView depthStencilView;
-    Texture2D depthStencilBuffer;
+    TextureBuffer2D depthStencilBuffer;
 
     HRESULT hr = D3D11CreateDeviceAndSwapChain(
         nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, creationFlags,
@@ -49,7 +49,7 @@ GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
         return nullptr;
     }
 
-    Texture2D backBuffer;
+    TextureBuffer2D backBuffer;
     hr = swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
     if (FAILED(hr)) {
         std::cerr << "failed to get backBuffer from swapChain." << std::endl;
@@ -85,23 +85,23 @@ GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
                                       depthStencilBuffer, depthStencilView);
 }
 
-DepthStencilView GraphicsDevice::CreateDepthStencilView(Texture2D buffer) {
+DepthStencilView GraphicsDevice::CreateDepthStencilView(TextureBuffer2D buffer) {
     DepthStencilView view;
     ThrowIfFailed(device->CreateDepthStencilView(buffer.Get(), nullptr,
                                                  view.GetAddressOf()));
     return view;
 }
 
-Texture2D
+TextureBuffer2D
 GraphicsDevice::CreateTexture2D(D3D11_TEXTURE2D_DESC &desc,
                                 const D3D11_SUBRESOURCE_DATA *pInitialData) {
-    Texture2D texture;
+    TextureBuffer2D texture;
     ThrowIfFailed(
         device->CreateTexture2D(&desc, pInitialData, texture.GetAddressOf()));
     return texture;
 }
 
-RenderTargetView GraphicsDevice::CreateRenderTargetView(Texture2D buffer) {
+RenderTargetView GraphicsDevice::CreateRenderTargetView(TextureBuffer2D buffer) {
     RenderTargetView rtv;
     ThrowIfFailed(device->CreateRenderTargetView(buffer.Get(), nullptr,
                                                  rtv.GetAddressOf()));

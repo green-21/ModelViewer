@@ -6,7 +6,7 @@
 class Renderer {
 public:
     Renderer(Context context, SwapChain swapChain,
-             RenderTargetView renderTargetView, Texture2D DepthStencilBuffer,
+             RenderTargetView renderTargetView, TextureBuffer2D DepthStencilBuffer,
              DepthStencilView depthStencilView)
         : context(context), swapChain(swapChain),
           renderTargetView(renderTargetView),
@@ -30,7 +30,7 @@ private:
     SwapChain swapChain;
 
     RenderTargetView renderTargetView;
-    Texture2D depthStencilBuffer;
+    TextureBuffer2D depthStencilBuffer;
     DepthStencilView depthStencilView;
 
     Viewport viewport{};

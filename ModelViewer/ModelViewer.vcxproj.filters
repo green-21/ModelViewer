@@ -27,6 +27,9 @@
     <Filter Include="shader">
       <UniqueIdentifier>{79739389-1854-4ee8-b12b-523328de02ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{a15df922-2761-43f1-86ba-84990d164f18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -54,6 +57,9 @@
     </ClInclude>
     <ClInclude Include="WindowsWindow.h">
       <Filter>back\window</Filter>
+    </ClInclude>
+    <ClInclude Include="FileIO.h">
+      <Filter>back</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

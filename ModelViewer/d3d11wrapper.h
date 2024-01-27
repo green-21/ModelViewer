@@ -40,9 +40,9 @@ using InputLayout = ComPtr<ID3D11InputLayout>;
 
 // Buffer & Texture
 using GraphicsBuffer = ComPtr<ID3D11Buffer>;
-using Texture1D = ComPtr<ID3D11Texture1D>;
-using Texture2D = ComPtr<ID3D11Texture2D>;
-using Texture3D = ComPtr<ID3D11Texture3D>;
+using TextureBuffer1D = ComPtr<ID3D11Texture1D>;
+using TextureBuffer2D = ComPtr<ID3D11Texture2D>;
+using TextureBuffer3D = ComPtr<ID3D11Texture3D>;
 
 //state
 using BlendState = ComPtr<ID3D11BlendState>;
