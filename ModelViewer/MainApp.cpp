@@ -3,6 +3,11 @@
 MainApp::MainApp() : ApplicationBase(800, 600) {}
 
 int MainApp::Init() {
+    if (UI::Init(screenWidth, screenHeight, window.GetHandle(), device->Get(),
+                 renderer->GetContext())) {
+        return -1;
+    }
+
     createPSO();
     renderer->SetViewport(screenWidth, screenHeight);
     renderer->SetPipelineState(pso);
@@ -15,11 +20,14 @@ int MainApp::Load() {
 }
 
 void MainApp::Update() {
+    UI::Update();
     renderer->ClearScreen();
-    renderer->Draw(triangle);
 }
 
-void MainApp::Draw() {}
+void MainApp::Draw() { 
+    renderer->Draw(triangle);
+    UI::Draw();
+}
 
 void MainApp::initBuffer() {
     { // vertexInput

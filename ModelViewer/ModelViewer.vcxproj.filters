@@ -2,9 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="WindowsWindow.cpp">
-      <Filter>back</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>back</Filter>
     </ClCompile>
@@ -15,6 +12,10 @@
       <Filter>back</Filter>
     </ClCompile>
     <ClCompile Include="MainApp.cpp" />
+    <ClCompile Include="UI.cpp" />
+    <ClCompile Include="WindowsWindow.cpp">
+      <Filter>back\window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="back">
@@ -23,14 +24,11 @@
     <Filter Include="back\shader">
       <UniqueIdentifier>{79739389-1854-4ee8-b12b-523328de02ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="back\window">
+      <UniqueIdentifier>{32f1b6c3-5362-4983-9c2e-5adf6b2e097f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WindowsWindow.h">
-      <Filter>back</Filter>
-    </ClInclude>
-    <ClInclude Include="MessageHandler.h">
-      <Filter>back</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>back</Filter>
     </ClInclude>
@@ -50,6 +48,13 @@
       <Filter>back</Filter>
     </ClInclude>
     <ClInclude Include="MainApp.h" />
+    <ClInclude Include="UI.h" />
+    <ClInclude Include="MessageHandler.h">
+      <Filter>back\window</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsWindow.h">
+      <Filter>back\window</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.clang-format" />

@@ -23,6 +23,8 @@ public:
     void Draw(GraphicsBuffer buffer);
     void Present() { swapChain->Present(1, 0); }
 
+    auto GetContext() { return context.Get(); }
+
 private:
     Context context;
     SwapChain swapChain;

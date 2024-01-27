@@ -34,7 +34,9 @@ public:
 
     GraphicsBuffer CreateGraphicsBuffer(D3D11_BUFFER_DESC &desc, const void * data);
 
-private:
+    auto Get() { return device.Get(); }
+
+    private:
     int width, height;
     Device device;
 };

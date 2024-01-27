@@ -136,6 +136,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="GraphicsDevice.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="UI.cpp" />
     <ClCompile Include="WindowsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +148,7 @@
     <ClInclude Include="GraphicsDevice.h" />
     <ClInclude Include="MessageHandler.h" />
     <ClInclude Include="ShaderCompiler.h" />
+    <ClInclude Include="UI.h" />
     <ClInclude Include="WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
