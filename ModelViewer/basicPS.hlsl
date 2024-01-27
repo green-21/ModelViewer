@@ -1,10 +1,14 @@
+
+Texture2D texture0 : register(t0);
+SamplerState basicSampler : register(s0);
+
 struct PSInput
 {
     float4 pos : SV_Position;
-    float3 color : COLOR;
+    float2 uv : UV;
 };
 
 float4 main(PSInput input) : SV_Target
 {
-    return float4(input.color, 1.0);
+    return texture0.Sample(basicSampler, input.uv);
 }

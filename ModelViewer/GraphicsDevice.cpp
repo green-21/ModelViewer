@@ -72,7 +72,7 @@ GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
     dsDesc.MiscFlags = 0;
     dsDesc.Usage = D3D11_USAGE_DEFAULT;
 
-    depthStencilBuffer = CreateTexture2D(dsDesc, nullptr);
+    depthStencilBuffer = CreateTextureBuffer2D(dsDesc, nullptr);
 
     hr = this->device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr,
                                               depthStencilView.GetAddressOf());
@@ -93,12 +93,26 @@ DepthStencilView GraphicsDevice::CreateDepthStencilView(TextureBuffer2D buffer) 
 }
 
 TextureBuffer2D
-GraphicsDevice::CreateTexture2D(D3D11_TEXTURE2D_DESC &desc,
-                                const D3D11_SUBRESOURCE_DATA *pInitialData) {
+GraphicsDevice::CreateTextureBuffer2D(D3D11_TEXTURE2D_DESC &desc,
+                                      const void *data, UINT pitch) {
     TextureBuffer2D texture;
-    ThrowIfFailed(
-        device->CreateTexture2D(&desc, pInitialData, texture.GetAddressOf()));
+
+    D3D11_SUBRESOURCE_DATA subResourceData{};
+    subResourceData.pSysMem = data;
+    subResourceData.SysMemPitch = pitch;
+
+    auto *p = data ? &subResourceData : nullptr;
+    ThrowIfFailed(device->CreateTexture2D(&desc, p, texture.GetAddressOf()));
     return texture;
+}
+
+
+ShaderResourceView
+GraphicsDevice::CreateShaderResourceView(TextureBuffer2D texture) {
+    ShaderResourceView view;
+    ThrowIfFailed(device->CreateShaderResourceView(texture.Get(), nullptr, view.GetAddressOf()));
+
+    return view;
 }
 
 RenderTargetView GraphicsDevice::CreateRenderTargetView(TextureBuffer2D buffer) {
@@ -159,8 +173,9 @@ GraphicsBuffer GraphicsDevice::CreateGraphicsBuffer(D3D11_BUFFER_DESC &desc,
     subResourceData.SysMemPitch = 0;
     subResourceData.SysMemSlicePitch = 0;
 
+    auto *p = data ? &subResourceData : nullptr;
     ThrowIfFailed(
-        device->CreateBuffer(&desc, &subResourceData, buffer.GetAddressOf()));
+        device->CreateBuffer(&desc, p, buffer.GetAddressOf()));
 
     return buffer;
 }

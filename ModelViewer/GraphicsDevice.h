@@ -4,9 +4,11 @@
 #include <memory>
 #include <vector>
 
-#include "d3d11wrapper.h"
-
+#include "Image.h"
+#include "Model.h"
 #include "Renderer.h"
+#include "TextureResource2D.h"
+#include "d3d11wrapper.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -17,8 +19,10 @@ public:
 
     DepthStencilView CreateDepthStencilView(TextureBuffer2D buffer);
 
-    TextureBuffer2D CreateTexture2D(D3D11_TEXTURE2D_DESC &desc,
-                              const D3D11_SUBRESOURCE_DATA *pInitialData);
+    TextureBuffer2D CreateTextureBuffer2D(D3D11_TEXTURE2D_DESC &desc,
+                                          const void *data, UINT pitch=0);
+
+    ShaderResourceView CreateShaderResourceView(TextureBuffer2D texture);
 
     RenderTargetView CreateRenderTargetView(TextureBuffer2D buffer);
 
@@ -32,11 +36,12 @@ public:
 
     RasterizerState CreateRasterizerState(D3D11_RASTERIZER_DESC &desc);
 
-    GraphicsBuffer CreateGraphicsBuffer(D3D11_BUFFER_DESC &desc, const void * data);
+    GraphicsBuffer CreateGraphicsBuffer(D3D11_BUFFER_DESC &desc,
+                                        const void *data);
 
     auto Get() { return device.Get(); }
 
-    private:
+private:
     int width, height;
     Device device;
 };

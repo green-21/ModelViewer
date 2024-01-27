@@ -16,6 +16,9 @@
     <ClCompile Include="WindowsWindow.cpp">
       <Filter>back\window</Filter>
     </ClCompile>
+    <ClCompile Include="FileIO.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="back">
@@ -59,7 +62,19 @@
       <Filter>back\window</Filter>
     </ClInclude>
     <ClInclude Include="FileIO.h">
-      <Filter>back</Filter>
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureResource2D.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -15,11 +15,7 @@
 using Microsoft::WRL::ComPtr;
 using DirectX::SimpleMath::Matrix;
 using DirectX::SimpleMath::Vector3;
-
-struct Vertex {
-    Vector3 position;
-    Vector3 color;
-};
+using DirectX::SimpleMath::Vector2;
 
 // device
 using Device = ComPtr<ID3D11Device>;

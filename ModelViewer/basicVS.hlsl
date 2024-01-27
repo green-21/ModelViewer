@@ -1,13 +1,14 @@
 struct VSInput
 {
     float3 pos : POSITION;
-    float3 color : COLOR;
+    float3 normal : NORMAL;
+    float2 uv : UV;
 };
 
 struct VSOutput
 {
     float4 pos : SV_Position;
-    float3 color : COLOR;
+    float2 uv : UV;
 };
 
 VSOutput main(VSInput input)
@@ -16,7 +17,7 @@ VSOutput main(VSInput input)
 
     VSOutput output;
     output.pos = pos;
-    output.color = input.color;
+    output.uv = input.uv;
 
     return output;
 }

@@ -1,4 +1,5 @@
 #include "MainApp.h"
+#include "FileIO.h"
 
 MainApp::MainApp() : ApplicationBase(800, 600) {}
 
@@ -15,7 +16,8 @@ int MainApp::Init() {
 }
 
 int MainApp::Load() {
-    initBuffer();
+    loadBox();
+
     return 0;
 }
 
@@ -24,27 +26,66 @@ void MainApp::Update() {
     renderer->ClearScreen();
 }
 
-void MainApp::Draw() { 
-    renderer->Draw(triangle);
+void MainApp::Draw() {
+    renderer->DrawIndexed(model);
     UI::Draw();
 }
 
-void MainApp::initBuffer() {
-    { // vertexInput
-        std::vector<Vertex> vertices = {
-            {{0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}},
-            {{1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-            {{-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-        };
+void MainApp::loadBox() {
+    Mesh box;
+    box.vertices = {
+        {{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+    };
+    box.indices = {0, 1, 3, 1, 2,3};
+    box.texturePath = "crate2_diffuse.png";
 
+    { // vertexBuffer
         D3D11_BUFFER_DESC desc{};
         desc.Usage = D3D11_USAGE_IMMUTABLE;
-        desc.ByteWidth = UINT(sizeof(Vertex) * vertices.size());
+        desc.ByteWidth = UINT(sizeof(Vertex) * box.vertices.size());
         desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         desc.CPUAccessFlags = 0;
         desc.StructureByteStride = sizeof(Vertex);
 
-        triangle = device->CreateGraphicsBuffer(desc, vertices.data());
+        model.vertices =
+            device->CreateGraphicsBuffer(desc, box.vertices.data());
+    }
+
+    { // indexBuffer
+
+        D3D11_BUFFER_DESC desc{};
+        desc.Usage = D3D11_USAGE_IMMUTABLE; // 초기화 후 변경X
+        desc.ByteWidth = UINT(sizeof(uint32_t) * box.indices.size());
+        desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        desc.CPUAccessFlags = 0;
+        desc.StructureByteStride = sizeof(uint32_t);
+
+        model.indexCount = box.indices.size();
+        model.indices = device->CreateGraphicsBuffer(desc, box.indices.data());
+    }
+
+    { // texture
+        Image image = FileIO::ReadImage(box.texturePath);
+
+        D3D11_TEXTURE2D_DESC desc{};
+        desc.ArraySize = 1;
+        desc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE;
+        desc.CPUAccessFlags = 0;
+        desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        desc.Width = image.GetWidth();
+        desc.Height = image.GetHeight();
+        desc.MipLevels = 1;
+        desc.MiscFlags = 0;
+        desc.SampleDesc.Count = 1;
+        desc.SampleDesc.Quality = 0;
+        desc.Usage = D3D11_USAGE::D3D11_USAGE_IMMUTABLE;
+
+        model.texture.buffer = device->CreateTextureBuffer2D(desc, image.GetData(), image.GetPitch());
+        model.texture.view =
+            device->CreateShaderResourceView(model.texture.buffer);
     }
 }
 
@@ -55,9 +96,10 @@ void MainApp::createPSO() {
         std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements = {
             {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
              D3D11_INPUT_PER_VERTEX_DATA, 0},
-            {"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 4 * 3,
+            {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12,
              D3D11_INPUT_PER_VERTEX_DATA, 0},
-        };
+            {"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24,
+             D3D11_INPUT_PER_VERTEX_DATA, 0}};
 
         pso.vertexShader = device->CreateVertexShader(blob);
         pso.inputLayout = device->CreateInputLayout(blob, inputElements);

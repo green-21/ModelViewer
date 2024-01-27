@@ -2,6 +2,7 @@
 
 #include "GraphicsPipelineStateObject.h"
 #include "d3d11wrapper.h"
+#include "Model.h"
 
 class Renderer {
 public:
@@ -20,7 +21,7 @@ public:
     void SetViewport(int width, int height);
     void SetPipelineState(const GraphicsPipelineStateObject &pso);
     void ClearScreen();
-    void Draw(GraphicsBuffer buffer);
+    void DrawIndexed(Model &model);
     void Present() { swapChain->Present(1, 0); }
 
     auto GetContext() { return context.Get(); }

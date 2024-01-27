@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationBase.cpp" />
+    <ClCompile Include="FileIO.cpp" />
     <ClCompile Include="MainApp.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="GraphicsDevice.cpp" />
@@ -144,11 +145,14 @@
     <ClInclude Include="d3d11wrapper.h" />
     <ClInclude Include="FileIO.h" />
     <ClInclude Include="GraphicsPipelineStateObject.h" />
+    <ClInclude Include="Image.h" />
     <ClInclude Include="MainApp.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="GraphicsDevice.h" />
     <ClInclude Include="MessageHandler.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ShaderCompiler.h" />
+    <ClInclude Include="TextureResource2D.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="WindowsWindow.h" />
   </ItemGroup>

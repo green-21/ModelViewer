@@ -14,6 +14,7 @@ void Renderer::SetViewport(int width, int height) {
 void Renderer::SetPipelineState(const GraphicsPipelineStateObject &pso) {
     context->VSSetShader(pso.vertexShader.Get(), 0, 0);
     context->PSSetShader(pso.pixelShader.Get(), 0, 0);
+    context->PSSetSamplers(0, 1, pso.samplerState.GetAddressOf());
     context->IASetInputLayout(pso.inputLayout.Get());
     context->RSSetState(pso.rasterizerState.Get());
     context->IASetPrimitiveTopology(pso.primitiveTopology);
@@ -23,15 +24,18 @@ void Renderer::ClearScreen() {
     float clearColor[4] = {0.5f, 0.5f, 1.0f, 1.0f};
     context->ClearRenderTargetView(renderTargetView.Get(), clearColor);
     context->ClearDepthStencilView(depthStencilView.Get(),
-                                     D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-                                     1.0f, 0);
+                                   D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+                                   1.0f, 0);
 }
 
-void Renderer::Draw(GraphicsBuffer buffer) { 
+void Renderer::DrawIndexed(Model &model) {
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
-    context->IASetVertexBuffers(0, 1, buffer.GetAddressOf(),
-                                      &stride, &offset);
-
-    context->Draw(3,0);
+    context->IASetVertexBuffers(0, 1, model.vertices.GetAddressOf(), &stride,
+                                &offset);
+    context->IASetIndexBuffer(model.indices.Get(), DXGI_FORMAT_R32_UINT, 0);
+    context->PSSetShaderResources(0, 1, model.texture.view.GetAddressOf());
+    context->DrawIndexed(model.indexCount, 0, 0);
 }
+
+
