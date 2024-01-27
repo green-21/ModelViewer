@@ -21,6 +21,8 @@ int main() {
     window.Show();
     while (!quitRequest) {
         window.PumpMessage();
+
+        renderer->Present();
     }
 
     return 0;

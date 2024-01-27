@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GraphicsPipelineStateObject.h"
 #include "d3d11wrapper.h"
 
 class Renderer {
@@ -12,6 +13,13 @@ public:
           depthStencilBuffer(depthStencilBuffer),
           depthStencilView(depthStencilView) {}
 
+    void
+    SetGraphicsPipelineStateObject(const GraphicsPipelineStateObject &pso) {
+        this->pso = pso;
+    }
+
+    void Present() { swapChain->Present(1, 0); }
+
 private:
     Context context;
     SwapChain swapChain;
@@ -21,4 +29,6 @@ private:
     DepthStencilView depthStencilView;
 
     Viewport viewport{};
+
+    GraphicsPipelineStateObject pso;
 };
