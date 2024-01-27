@@ -21,11 +21,11 @@
     <Filter Include="back">
       <UniqueIdentifier>{4a3d5074-63fd-45c7-aa24-79cabdbb9cca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="back\shader">
-      <UniqueIdentifier>{79739389-1854-4ee8-b12b-523328de02ea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="back\window">
       <UniqueIdentifier>{32f1b6c3-5362-4983-9c2e-5adf6b2e097f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{79739389-1854-4ee8-b12b-523328de02ea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -42,7 +42,7 @@
       <Filter>back</Filter>
     </ClInclude>
     <ClInclude Include="ShaderCompiler.h">
-      <Filter>back\shader</Filter>
+      <Filter>shader</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsPipelineStateObject.h">
       <Filter>back</Filter>
@@ -61,10 +61,10 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="basicVS.hlsl">
-      <Filter>back\shader</Filter>
+      <Filter>shader</Filter>
     </FxCompile>
     <FxCompile Include="basicPS.hlsl">
-      <Filter>back\shader</Filter>
+      <Filter>shader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
