@@ -33,9 +33,9 @@ void Renderer::DrawIndexed(Model &model) {
     UINT offset = 0;
     context->IASetVertexBuffers(0, 1, model.vertices.GetAddressOf(), &stride,
                                 &offset);
+    context->VSSetConstantBuffers(0, 1,
+                                  model.transformationBuffer.GetAddressOf());
     context->IASetIndexBuffer(model.indices.Get(), DXGI_FORMAT_R32_UINT, 0);
     context->PSSetShaderResources(0, 1, model.texture.view.GetAddressOf());
     context->DrawIndexed(model.indexCount, 0, 0);
 }
-
-

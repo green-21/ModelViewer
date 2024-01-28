@@ -19,6 +19,9 @@
     <ClCompile Include="FileIO.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>back</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="back">
@@ -70,11 +73,14 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Resource</Filter>
     </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Image.h">
-      <Filter>Resource</Filter>
+    <ClInclude Include="Camera.h">
+      <Filter>back</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

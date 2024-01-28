@@ -24,6 +24,16 @@ public:
     void DrawIndexed(Model &model);
     void Present() { swapChain->Present(1, 0); }
 
+    template<typename T>
+    void UpdateBuffer(GraphicsBuffer buffer, T& data) {
+        D3D11_MAPPED_SUBRESOURCE ms;
+
+        ThrowIfFailed(context->Map(buffer.Get(), NULL, D3D11_MAP_WRITE_DISCARD,
+                                   NULL, &ms));
+        memcpy(ms.pData, &data, sizeof(data));
+        context->Unmap(buffer.Get(), NULL);
+    }
+
     auto GetContext() { return context.Get(); }
 
 private:

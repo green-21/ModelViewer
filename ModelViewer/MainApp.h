@@ -3,10 +3,11 @@
 #include "ApplicationBase.h"
 #include "UI.h"
 #include "Model.h"
+#include "Camera.h"
 
 class MainApp : public ApplicationBase {
 public:
-    MainApp();
+    MainApp(int width, int height);
 
 protected:
     virtual int Init() override;
@@ -23,4 +24,6 @@ private:
     GraphicsPipelineStateObject pso;
     GraphicsBuffer triangle;
     Model model;
+    UI ui;
+    Camera camera;
 };

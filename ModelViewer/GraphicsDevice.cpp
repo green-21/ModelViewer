@@ -176,6 +176,6 @@ GraphicsBuffer GraphicsDevice::CreateGraphicsBuffer(D3D11_BUFFER_DESC &desc,
     auto *p = data ? &subResourceData : nullptr;
     ThrowIfFailed(
         device->CreateBuffer(&desc, p, buffer.GetAddressOf()));
-
+    
     return buffer;
 }

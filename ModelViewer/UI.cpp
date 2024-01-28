@@ -6,7 +6,7 @@ int UI::Init(int width, int height, HWND hWnd, ID3D11Device *device,
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     io.DisplaySize = ImVec2(float(width), float(height));
-    ImGui::StyleColorsLight();
+    //ImGui::StyleColorsLight();
 
     if (!ImGui_ImplDX11_Init(device, context)) {
         return -1;
@@ -15,7 +15,8 @@ int UI::Init(int width, int height, HWND hWnd, ID3D11Device *device,
     if (!ImGui_ImplWin32_Init(hWnd)) {
         return -1;
     }
-
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\malgun.ttf", 16.0f, NULL,
+                                 io.Fonts->GetGlyphRangesKorean());
     return 0;
 }
 
@@ -24,9 +25,12 @@ void UI::Update() {
     ImGui_ImplWin32_NewFrame();
 
     ImGui::NewFrame();
-    ImGui::Begin("example");
-
-    ImGui::Text("FPS:%.1f", ImGui::GetIO().Framerate);
+    ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+    ImGui::Begin("ui");
+    ImGui::Text("[FPS] %.1f", ImGui::GetIO().Framerate);
+    ImGui::SliderFloat3(u8"좌표", &transform.x, -1.0f, 1.0f);
+    ImGui::SliderFloat3(u8"회전", &rotation.x, -3.14f, 3.14f);
+    ImGui::SliderFloat3(u8"스케일", &scale.x, 0.0f, 2.0f);
     ImGui::End();
     ImGui::Render();
 }

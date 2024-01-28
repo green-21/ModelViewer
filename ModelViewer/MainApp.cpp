@@ -1,11 +1,11 @@
 #include "MainApp.h"
 #include "FileIO.h"
 
-MainApp::MainApp() : ApplicationBase(800, 600) {}
+MainApp::MainApp(int width, int height) : ApplicationBase(width, height), camera(width, height) {}
 
 int MainApp::Init() {
-    if (UI::Init(screenWidth, screenHeight, window.GetHandle(), device->Get(),
-                 renderer->GetContext())) {
+    if (ui.Init(screenWidth, screenHeight, window.GetHandle(), device->Get(),
+                renderer->GetContext())) {
         return -1;
     }
 
@@ -22,13 +22,25 @@ int MainApp::Load() {
 }
 
 void MainApp::Update() {
-    UI::Update();
-    renderer->ClearScreen();
+    ui.Update();
+    auto &matrices = model.transformationMatrix;
+    matrices.model = Matrix::CreateScale(ui.Getscale()) *
+                     Matrix::CreateTranslation(ui.GetTransform()) *
+                     Matrix::CreateRotationY(ui.GetRotation().y) *
+                     Matrix::CreateRotationX(ui.GetRotation().x) *
+                     Matrix::CreateRotationZ(ui.GetRotation().z);
+
+    matrices.view = camera.GetViewMatrix();
+    matrices.projection = camera.GetProjectionMatrix();
+
+    matrices.Transpose();
+    renderer->UpdateBuffer(model.transformationBuffer, matrices);
 }
 
 void MainApp::Draw() {
+    renderer->ClearScreen();
     renderer->DrawIndexed(model);
-    UI::Draw();
+    ui.Draw();
 }
 
 void MainApp::loadBox() {
@@ -39,7 +51,7 @@ void MainApp::loadBox() {
         {{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
         {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
     };
-    box.indices = {0, 1, 3, 1, 2,3};
+    box.indices = {0, 1, 3, 1, 2, 3};
     box.texturePath = "crate2_diffuse.png";
 
     { // vertexBuffer
@@ -83,9 +95,21 @@ void MainApp::loadBox() {
         desc.SampleDesc.Quality = 0;
         desc.Usage = D3D11_USAGE::D3D11_USAGE_IMMUTABLE;
 
-        model.texture.buffer = device->CreateTextureBuffer2D(desc, image.GetData(), image.GetPitch());
+        model.texture.buffer = device->CreateTextureBuffer2D(
+            desc, image.GetData(), image.GetPitch());
         model.texture.view =
             device->CreateShaderResourceView(model.texture.buffer);
+    }
+
+    { // transformantion
+        D3D11_BUFFER_DESC desc{};
+        desc.Usage = D3D11_USAGE_DYNAMIC;
+        desc.ByteWidth = UINT(sizeof(model.transformationMatrix));
+        desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        desc.StructureByteStride = sizeof(Vertex);
+        model.transformationBuffer =
+            device->CreateGraphicsBuffer(desc, &model.transformationMatrix);
     }
 }
 

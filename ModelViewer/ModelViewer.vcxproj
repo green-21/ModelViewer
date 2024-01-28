@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationBase.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FileIO.cpp" />
     <ClCompile Include="MainApp.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -142,11 +143,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationBase.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="d3d11wrapper.h" />
     <ClInclude Include="FileIO.h" />
     <ClInclude Include="GraphicsPipelineStateObject.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="MainApp.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="GraphicsDevice.h" />
     <ClInclude Include="MessageHandler.h" />

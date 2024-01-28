@@ -8,7 +8,7 @@
 
 
 int main() {
-    MainApp app;
+    MainApp app(1280, 720);
     app.Run();
     return 0;
 }
