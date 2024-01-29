@@ -30,20 +30,28 @@ struct TransformationMatrix {
 };
 
 // CPU 상 존재하는 모델 데이터
-struct Mesh {
+struct MeshData {
     std::string texturePath;
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
-    std::vector<TextureBuffer2D> textures;
 };
 
 // GPU 상 존재하는 모델 데이터
 // 모델은 인스턴싱을 위헤 레퍼런스로 관리할 것.
-struct Model {
+
+struct ModelMesh {
     UINT indexCount;
-    TextureResource2D texture;
     GraphicsBuffer vertices;
     GraphicsBuffer indices;
+};
+
+struct ModelNode {
+    ModelMesh mesh;
+    TextureResource2D texture;
+};
+
+struct Model {
+    std::vector<ModelNode> nodes;
     TransformationMatrix transformationMatrix;
     GraphicsBuffer transformationBuffer;
 };

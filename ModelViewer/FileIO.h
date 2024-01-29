@@ -21,12 +21,13 @@ public:
 // reference: LearnOpenGL
 class ModelLoader {
 public:
-    std::vector<Mesh> &&LoadModel(const std::string filename);
+    std::vector<MeshData> &&LoadModel(const std::string filename);
 
 private:
     void processNode(aiNode *node, const aiScene *scene);
-    Mesh processMesh(aiMesh *mesh, const aiScene *scene);
+    MeshData processMesh(aiMesh *mesh, const aiScene *scene);
+    //std::string processMaterial(aiMesh *mesh, const aiScene *scene);
 
-    std::vector<Mesh> meshes;
+    std::vector<MeshData> meshes;
     std::string directory;
 };

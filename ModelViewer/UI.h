@@ -18,10 +18,10 @@ public:
 
     Vector3 GetTransform() { return transform; }
     Vector3 GetRotation() { return rotation; }
-    Vector3 Getscale() { return scale; }
+    Vector3 Getscale() { return Vector3(scale); }
 
 private:
     Vector3 transform;
     Vector3 rotation;
-    Vector3 scale;
+    float scale;
 };

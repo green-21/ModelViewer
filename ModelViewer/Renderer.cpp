@@ -32,11 +32,15 @@ void Renderer::ClearScreen() {
 void Renderer::DrawIndexed(Model &model) {
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
-    context->IASetVertexBuffers(0, 1, model.vertices.GetAddressOf(), &stride,
-                                &offset);
+
     context->VSSetConstantBuffers(0, 1,
                                   model.transformationBuffer.GetAddressOf());
-    context->IASetIndexBuffer(model.indices.Get(), DXGI_FORMAT_R32_UINT, 0);
-    context->PSSetShaderResources(0, 1, model.texture.view.GetAddressOf());
-    context->DrawIndexed(model.indexCount, 0, 0);
+    for (auto &node : model.nodes) {
+        context->IASetVertexBuffers(0, 1, node.mesh.vertices.GetAddressOf(), &stride,
+                                    &offset);
+
+        context->IASetIndexBuffer(node.mesh.indices.Get(), DXGI_FORMAT_R32_UINT, 0);
+        context->PSSetShaderResources(0, 1, node.texture.view.GetAddressOf());
+        context->DrawIndexed(node.mesh.indexCount, 0, 0);
+    } 
 }

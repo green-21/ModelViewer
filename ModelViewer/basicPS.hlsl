@@ -11,6 +11,5 @@ struct PSInput
 
 float4 main(PSInput input) : SV_Target
 {
-    return float4(input.normal,1.0);
-    //texture0.Sample(basicSampler, input.uv);
+    return texture0.Sample(basicSampler, input.uv);
 }

@@ -29,11 +29,13 @@ int ApplicationBase::init() {
         return -1;
     window.Show();
 
-    device = std::make_unique<GraphicsDevice>();
+    device = std::make_shared<GraphicsDevice>();
     renderer = device->InitAndCreateRenderer(window.GetHandle(), screenWidth,
                                              screenHeight);
 
-    if (!device || !renderer)
+    resourceManager = std::make_unique<ResourceManager>(device);
+
+    if (!device || !renderer || !resourceManager)
         return -1;
 
     if (Init())

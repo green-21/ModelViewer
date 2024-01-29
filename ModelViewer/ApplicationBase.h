@@ -11,6 +11,7 @@
 #include "GraphicsPipelineStateObject.h"
 #include "Renderer.h"
 #include "ShaderCompiler.h"
+#include "ResourceManager.h"
 
 class ApplicationBase {
 public:
@@ -35,8 +36,9 @@ protected:
     int screenWidth, screenHeight;
     WindowsWindow window;
     std::shared_ptr<MessageHandler> msgHandler;
-    std::unique_ptr<GraphicsDevice> device;
+    std::shared_ptr<GraphicsDevice> device;
     std::unique_ptr<Renderer> renderer;
+    std::unique_ptr<ResourceManager> resourceManager;
 
 private:
     bool quitRequest;

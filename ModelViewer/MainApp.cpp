@@ -17,7 +17,7 @@ int MainApp::Init() {
 }
 
 int MainApp::Load() {
-    loadBox();
+    //loadBox();
     loadModel();
     return 0;
 }
@@ -37,98 +37,30 @@ void MainApp::Update() {
     //matrices.Transpose();
     //renderer->UpdateBuffer(boxModel.transformationBuffer, matrices);
 
-     for (auto &duck : duckModel) {
-         auto &matrices = duck.transformationMatrix;
-          matrices.model = Matrix::CreateScale(ui.Getscale()) *
-                             Matrix::CreateTranslation(ui.GetTransform()) *
-                             Matrix::CreateRotationY(ui.GetRotation().y) *
-                             Matrix::CreateRotationX(ui.GetRotation().x) *
-                             Matrix::CreateRotationZ(ui.GetRotation().z);
+        auto &matrices = duckModel.transformationMatrix;
+    matrices.model = Matrix::CreateScale(ui.Getscale()) *
+                     Matrix::CreateTranslation(ui.GetTransform()) *
+                     Matrix::CreateRotationY(ui.GetRotation().y) *
+                     Matrix::CreateRotationX(ui.GetRotation().x) *
+                     Matrix::CreateRotationZ(ui.GetRotation().z);
 
-         matrices.view = camera.GetViewMatrix();
-         matrices.projection = camera.GetProjectionMatrix();
+    matrices.view = camera.GetViewMatrix();
+    matrices.projection = camera.GetProjectionMatrix();
 
-         matrices.Transpose();
-         renderer->UpdateBuffer(duck.transformationBuffer, matrices);
-    }
+    matrices.Transpose();
+    renderer->UpdateBuffer(duckModel.transformationBuffer, matrices);
 }
 
 void MainApp::Draw() {
     renderer->ClearScreen();
-    renderer->DrawIndexed(boxModel);
-     for (auto &duck : duckModel) {
-         renderer->DrawIndexed(duck);
-     }
+    //renderer->DrawIndexed(boxModel);
+    renderer->DrawIndexed(duckModel);
     ui.Draw();
 }
 
-Model MainApp::convertMeshToModel(Mesh &mesh) {
-    Model result;
-
-    { // vertexBuffer
-        D3D11_BUFFER_DESC desc{};
-        desc.Usage = D3D11_USAGE_IMMUTABLE;
-        desc.ByteWidth = UINT(sizeof(Vertex) * mesh.vertices.size());
-        desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-        desc.CPUAccessFlags = 0;
-        desc.StructureByteStride = sizeof(Vertex);
-
-        result.vertices =
-            device->CreateGraphicsBuffer(desc, mesh.vertices.data());
-    }
-
-    { // indexBuffer
-        D3D11_BUFFER_DESC desc{};
-        desc.Usage = D3D11_USAGE_IMMUTABLE; // 초기화 후 변경X
-        desc.ByteWidth = UINT(sizeof(uint32_t) * mesh.indices.size());
-        desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-        desc.CPUAccessFlags = 0;
-        desc.StructureByteStride = sizeof(uint32_t);
-
-        result.indexCount = mesh.indices.size();
-        result.indices =
-            device->CreateGraphicsBuffer(desc, mesh.indices.data());
-    }
-
-    if (!mesh.texturePath.empty()) { // texture
-        Image image = FileIO::ReadImage(mesh.texturePath);
-
-        D3D11_TEXTURE2D_DESC desc{};
-        desc.ArraySize = 1;
-        desc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE;
-        desc.CPUAccessFlags = 0;
-        desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        desc.Width = image.GetWidth();
-        desc.Height = image.GetHeight();
-        desc.MipLevels = 1;
-        desc.MiscFlags = 0;
-        desc.SampleDesc.Count = 1;
-        desc.SampleDesc.Quality = 0;
-        desc.Usage = D3D11_USAGE::D3D11_USAGE_IMMUTABLE;
-
-        result.texture.buffer = device->CreateTextureBuffer2D(
-            desc, image.GetData(), image.GetPitch());
-        result.texture.view =
-            device->CreateShaderResourceView(result.texture.buffer);
-    }
-
-    { // transformantion
-        D3D11_BUFFER_DESC desc{};
-        desc.Usage = D3D11_USAGE_DYNAMIC;
-        desc.ByteWidth = UINT(sizeof(boxModel.transformationMatrix));
-        desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-        desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-        desc.StructureByteStride = sizeof(Vertex);
-        result.transformationBuffer =
-            device->CreateGraphicsBuffer(desc, &boxModel.transformationMatrix);
-    }
-
-    return result;
-}
-
 void MainApp::loadBox() {
-    Mesh box;
-    box.vertices = {
+    MeshData cubeMeshData;
+    cubeMeshData.vertices = {
         // front
         {{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
         {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
@@ -165,23 +97,23 @@ void MainApp::loadBox() {
         {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
         {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
     };
-    box.indices = {0,  1,  3,  1,  2,  3,  4,  7,  6,  4,  6,  5,
+    cubeMeshData.indices = {0,  1,  3,  1,  2,  3,  4,  7,  6,  4,  6,  5,
                    8,  11, 9,  11, 10, 9,  12, 14, 15, 12, 13, 14,
                    16, 19, 18, 16, 17, 19, 20, 22, 23, 20, 23, 21};
-    box.texturePath = "resource\\texture\\crate2_diffuse.png";
 
-    boxModel = convertMeshToModel(box);
+    cubeMeshData.texturePath = "resource\\texture\\crate2_diffuse.png";
+
+    resourceManager->CreateModelMeshAndTexture("cube", cubeMeshData);
+    boxModel = resourceManager->CreateModelFromStroageData("cube");
 }
 
 void MainApp::loadModel() {
-    ModelLoader loader;
-    auto meshes =
-         loader.LoadModel("resource\\gltf\\duck\\Duck.gltf");
-        // loader.LoadModel("resource\\gltf\\BarramundiFish\\BarramundiFish.gltf");
+    resourceManager->LoadModelFromFile("duck",  "resource\\gltf\\duck\\Duck.gltf");
+        // loader.LoadModel("resource\\gltf\\FlightHelmet\\FlightHelmet.gltf");
+         //loader.LoadModel("resource\\gltf\\SciFiHelmet\\SciFiHelmet.gltf");
+        //loader.LoadModel("resource\\gltf\\BarramundiFish\\BarramundiFish.gltf");
 
-    for (auto &mesh : meshes) {
-        duckModel.push_back(convertMeshToModel(mesh));
-    }
+    duckModel = resourceManager->UseModel("duck");
 }
 
 void MainApp::createPSO() {

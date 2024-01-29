@@ -4,6 +4,7 @@
 #include "FileIO.h"
 Image FileIO::ReadImage(const std::string filename) {
     int width, height, ch;
+    constexpr int fullChannel = 4;
     unsigned char *raw = stbi_load(filename.c_str(), &width, &height, &ch, 0);
     size_t size = width * height;
 
@@ -11,12 +12,12 @@ Image FileIO::ReadImage(const std::string filename) {
         std::exception(raw);
     }
 
-    std::vector<uint8_t> img(size * 4, 255);
+    std::vector<uint8_t> img(size * fullChannel, 255);
     switch (ch) {
     case 1:
         for (size_t i = 0; i < size; i++) {
-            for (size_t c = 0; c < 4; c++) {
-                img[i * 4 + c] = raw[i];
+            for (size_t c = 0; c < fullChannel; c++) {
+                img[i * fullChannel + c] = raw[i];
             }
         }
         break;
@@ -25,23 +26,24 @@ Image FileIO::ReadImage(const std::string filename) {
     case 4:
         for (size_t i = 0; i < size; i++) {
             for (size_t c = 0; c < ch; c++) {
-                img[i * ch + c] = raw[i * ch + c];
+                img[i * fullChannel + c] = raw[i * ch + c];
             }
         }
         break;
     }
 
     delete[] raw;
-    return Image(width, height, ch, img);
+    return Image(width, height, fullChannel, img);
 }
 
 // reference: learnOpenGL
-std::vector<Mesh> &&ModelLoader::LoadModel(const std::string filename) {
+std::vector<MeshData> &&ModelLoader::LoadModel(const std::string filename) {
     Assimp::Importer importer;
 
-    unsigned int flag =
-        aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
-        aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_FlipUVs;
+    unsigned int flag = aiProcess_Triangulate |
+                        aiProcess_JoinIdenticalVertices |
+                        aiProcess_CalcTangentSpace | aiProcess_GenNormals |
+                        aiProcess_FlipUVs;
 
     const aiScene *scene = importer.ReadFile(filename, flag);
 
@@ -50,7 +52,7 @@ std::vector<Mesh> &&ModelLoader::LoadModel(const std::string filename) {
         throw std::exception(importer.GetErrorString());
     }
 
-    directory = filename.substr(0, filename.find_last_of('\\'));
+    directory = filename.substr(0, filename.find_last_of('\\')) + '\\';
     processNode(scene->mRootNode, scene);
 
     return std::move(meshes);
@@ -60,7 +62,9 @@ void ModelLoader::processNode(aiNode *node, const aiScene *scene) {
     // process all the node's meshes (if any)
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        meshes.push_back(processMesh(mesh, scene));
+        auto newMesh = processMesh(mesh, scene);
+
+        meshes.push_back(newMesh);
     }
 
     // then do the same for each of its children
@@ -69,8 +73,8 @@ void ModelLoader::processNode(aiNode *node, const aiScene *scene) {
     }
 }
 
-Mesh ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene) {
-    Mesh result;
+MeshData ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene) {
+    MeshData result;
 
     // vertices
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
@@ -100,12 +104,21 @@ Mesh ModelLoader::processMesh(aiMesh *mesh, const aiScene *scene) {
         for (unsigned int j = 0; j < face.mNumIndices; j++) {
             result.indices.push_back(face.mIndices[j]);
         }
-    }
+    } 
 
     // materials
     if (mesh->mMaterialIndex >= 0) {
-        // TODO //
+        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+
+        if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+            aiString path;
+            material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+            result.texturePath = this->directory + path.C_Str();
+        }
     }
 
     return result;
 }
+
+//std::string ModelLoader::processMaterial(aiMesh *mesh, const aiScene *scene) {
+//}
