@@ -18,6 +18,7 @@ void Renderer::SetPipelineState(const GraphicsPipelineStateObject &pso) {
     context->IASetInputLayout(pso.inputLayout.Get());
     context->RSSetState(pso.rasterizerState.Get());
     context->IASetPrimitiveTopology(pso.primitiveTopology);
+    context->OMSetDepthStencilState(pso.depthStencilState.Get(), 0);
 }
 
 void Renderer::ClearScreen() {

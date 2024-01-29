@@ -10,7 +10,7 @@
 // Imgui
 class UI {
 public:
-    UI() : transform(0.0f), rotation(0.0f), scale(1.0f) {}
+    UI() : transform(0.0f), rotation(0.0f), scale(0.01f) {}
     int Init(int width, int height, HWND hWnd, ID3D11Device *device,
              ID3D11DeviceContext *context);
     void Update();

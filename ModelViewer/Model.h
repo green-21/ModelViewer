@@ -34,6 +34,7 @@ struct Mesh {
     std::string texturePath;
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
+    std::vector<TextureBuffer2D> textures;
 };
 
 // GPU 상 존재하는 모델 데이터

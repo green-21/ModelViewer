@@ -8,6 +8,7 @@ struct VSInput
 struct VSOutput
 {
     float4 pos : SV_Position;
+    float3 normal : NORMAL;
     float2 uv : UV;
 };
 
@@ -27,6 +28,7 @@ VSOutput main(VSInput input)
     pos = mul(pos, projection);
     
     output.pos = pos;
+    output.normal = input.normal;
     output.uv = input.uv;
     return output;
 }

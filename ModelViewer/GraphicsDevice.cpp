@@ -179,3 +179,11 @@ GraphicsBuffer GraphicsDevice::CreateGraphicsBuffer(D3D11_BUFFER_DESC &desc,
     
     return buffer;
 }
+
+DepthStencilState
+GraphicsDevice::CreateDepthStencilState(D3D11_DEPTH_STENCIL_DESC &desc) {
+    DepthStencilState state;
+    ThrowIfFailed(device->CreateDepthStencilState(&desc, state.GetAddressOf()));
+
+    return state;
+}

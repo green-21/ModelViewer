@@ -11,6 +11,7 @@ public:
         inputLayout = pso.inputLayout;
         samplerState = pso.samplerState;
         primitiveTopology = pso.primitiveTopology;
+        depthStencilState = pso.depthStencilState;
     }
 
 public:
@@ -19,5 +20,6 @@ public:
     RasterizerState rasterizerState;
     SamplerState samplerState;
     InputLayout inputLayout;
+    DepthStencilState depthStencilState;
     D3D11_PRIMITIVE_TOPOLOGY primitiveTopology;
 };

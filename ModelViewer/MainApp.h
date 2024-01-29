@@ -16,14 +16,17 @@ protected:
     virtual void Draw() override;
 
 private:
+    Model convertMeshToModel(Mesh &mesh);
     void loadBox();
+    void loadModel();
     void createPSO();
 
 
 private:
     GraphicsPipelineStateObject pso;
     GraphicsBuffer triangle;
-    Model model;
+    Model boxModel;
+    std::vector<Model> duckModel;
     UI ui;
     Camera camera;
 };

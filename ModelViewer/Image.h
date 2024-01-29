@@ -1,7 +1,8 @@
 #pragma once
 
 #include <vector>
-// raw pointer를 사용하기 때문에 메모리 해제에 유의할 것.
+
+
 class Image {
 public:
     Image(int width, int height, int channel, std::vector<uint8_t> &raw)

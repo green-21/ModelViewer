@@ -39,6 +39,8 @@ public:
     GraphicsBuffer CreateGraphicsBuffer(D3D11_BUFFER_DESC &desc,
                                         const void *data);
 
+    DepthStencilState CreateDepthStencilState(D3D11_DEPTH_STENCIL_DESC &desc);
+
     auto Get() { return device.Get(); }
 
 private:

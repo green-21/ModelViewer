@@ -21,7 +21,7 @@ public:
     void SetViewport(int width, int height);
     void SetPipelineState(const GraphicsPipelineStateObject &pso);
     void ClearScreen();
-    void DrawIndexed(Model &model);
+    void DrawIndexed(Model &boxModel);
     void Present() { swapChain->Present(1, 0); }
 
     template<typename T>
