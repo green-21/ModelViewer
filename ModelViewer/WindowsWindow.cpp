@@ -86,8 +86,8 @@ int WindowsWindow::Close() {
 LRESULT WindowsWindow::MsgProc(HWND hWnd, UINT msg, WPARAM wParam,
                                LPARAM lParam) {
 
-    // imGUI를 사용하기 위해서는 다음과 같은 방법을 이용해야하는데, 굉장히 마음에 들지 않는다.
-    // 해결할 방법을 찾아야 한다.
+    // imGUI를 사용하기 위해서는 다음과 같은 방법을 이용해야하는데, 굉장히
+    // 마음에 들지 않는다. 해결할 방법을 찾아야 한다.
     if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
         return true;
 
@@ -97,8 +97,27 @@ LRESULT WindowsWindow::MsgProc(HWND hWnd, UINT msg, WPARAM wParam,
             return 0;
         }
         break;
+
+    case WM_MOUSEMOVE:
+        msgHandler->OnMouseMove(LOWORD(lParam), HIWORD(lParam));
+        break;
+    case WM_LBUTTONDOWN:
+        msgHandler->OnLeftMouseDown();
+        break;
+    case WM_LBUTTONUP:
+        msgHandler->OnLeftMouseUp();
+        break;
+    case WM_RBUTTONDOWN:
+        msgHandler->OnRightMouseDown();
+        break;
+    case WM_RBUTTONUP:
+        msgHandler->OnRightMouseUp();
+        break;
     case WM_KEYDOWN:
         this->msgHandler->OnKeyDown(static_cast<int>(wParam));
+        break;
+    case WM_KEYUP:
+        this->msgHandler->OnKeyUp(static_cast<int>(wParam));
         break;
     case WM_DESTROY:
         ::PostQuitMessage(0);

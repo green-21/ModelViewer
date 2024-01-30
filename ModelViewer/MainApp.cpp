@@ -23,8 +23,16 @@ int MainApp::Load() {
     return 0;
 }
 
-void MainApp::Update() {
+void MainApp::Update(float dt) {
     ui.Update();
+    if (msgHandler->IsLeftMousePress()) {
+        std::cout << "마우스 왼쪽 버튼 눌림" << std::endl;
+    }
+
+    if (msgHandler->IsKeyPress(KeyCode::A)) {
+        std::cout << "마우스 왼쪽 버튼 눌림" << std::endl;
+    }
+
     defaultUpdate(boxModel);
     defaultUpdate(duckModel);
     defaultUpdate(gridModel);

@@ -12,7 +12,7 @@ public:
 protected:
     virtual int Init() override;
     virtual int Load() override;
-    virtual void Update() override;
+    virtual void Update(float dt) override;
     virtual void Draw() override;
 
 private:

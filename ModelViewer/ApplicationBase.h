@@ -12,6 +12,7 @@
 #include "Renderer.h"
 #include "ShaderCompiler.h"
 #include "ResourceManager.h"
+#include "Timer.h"
 
 class ApplicationBase {
 public:
@@ -23,7 +24,7 @@ public:
 protected:
     virtual int Init() = 0;
     virtual int Load() = 0;
-    virtual void Update() = 0;
+    virtual void Update(float dt) = 0;
     virtual void Draw() = 0;
 
     void Exit() { this->quitRequest = true; }
@@ -39,6 +40,7 @@ protected:
     std::shared_ptr<GraphicsDevice> device;
     std::unique_ptr<Renderer> renderer;
     std::unique_ptr<ResourceManager> resourceManager;
+    Timer timer;
 
 private:
     bool quitRequest;

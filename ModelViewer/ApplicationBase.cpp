@@ -7,10 +7,12 @@ int ApplicationBase::Run() {
     if (load())
         return -1;
 
+    timer.Reset();
+
     while (!quitRequest) {
         window.PumpMessage();
-
-        Update();
+        timer.Tick();
+        Update(timer.DeltaTime());
         Draw();
 
         renderer->Present();
