@@ -135,7 +135,7 @@ InputLayout GraphicsDevice::CreateInputLayout(
     std::vector<D3D11_INPUT_ELEMENT_DESC> &inputElements) {
     InputLayout il;
     ThrowIfFailed(device->CreateInputLayout(
-        inputElements.data(), inputElements.size(),
+        inputElements.data(), UINT(inputElements.size()),
         shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(),
         il.GetAddressOf()));
 

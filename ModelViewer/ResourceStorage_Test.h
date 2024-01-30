@@ -19,7 +19,9 @@ void resourceStorageDefaultTest() {
     try {
         S.Get("d");
         assert(false);
-    } catch (std::exception &e) {}
+    } catch (std::exception &e) {
+        std::cout << "정상적으로 예외가 출력됨 =" << e.what() << std::endl;
+    }
 
     // 중복 삽입시 업데이트
     S.Insert("a", 111);
@@ -31,5 +33,6 @@ void resourceStorageDefaultTest() {
         S.Get("a");
         assert(false);
     } catch (std::exception &e) {
+        std::cout << "정상적으로 예외가 출력됨 =" << e.what() << std::endl;
     }
 }

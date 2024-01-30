@@ -103,7 +103,7 @@ ModelMesh ResourceManager::createModelMesh(MeshData &mesh) {
         desc.StructureByteStride = sizeof(uint32_t);
         result.indices = device->CreateGraphicsBuffer(desc, mesh.indices.data());
 
-        result.indexCount = mesh.indices.size();
+        result.indexCount = UINT(mesh.indices.size());
     }
 
     return result;

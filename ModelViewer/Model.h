@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include "TextureResource2D.h"
 #include "d3d11wrapper.h"
@@ -40,7 +41,7 @@ struct MeshData {
 // 모델은 인스턴싱을 위헤 레퍼런스로 관리할 것.
 
 struct ModelMesh {
-    UINT indexCount;
+    UINT indexCount = 0;
     GraphicsBuffer vertices;
     GraphicsBuffer indices;
 };

@@ -25,6 +25,9 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
+    <ClCompile Include="MeshGenerator.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="back">
@@ -97,6 +100,9 @@
     <ClInclude Include="ResourceStorage.h">
       <Filter>Resource</Filter>
     </ClInclude>
+    <ClInclude Include="MeshGenerator.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.clang-format" />
@@ -106,6 +112,9 @@
       <Filter>shader</Filter>
     </FxCompile>
     <FxCompile Include="basicPS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="gridPS.hlsl">
       <Filter>shader</Filter>
     </FxCompile>
   </ItemGroup>
