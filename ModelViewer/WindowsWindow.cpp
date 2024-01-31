@@ -88,8 +88,9 @@ LRESULT WindowsWindow::MsgProc(HWND hWnd, UINT msg, WPARAM wParam,
 
     // imGUI를 사용하기 위해서는 다음과 같은 방법을 이용해야하는데, 굉장히
     // 마음에 들지 않는다. 해결할 방법을 찾아야 한다.
-    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam)) {
         return true;
+    }
 
     switch (msg) {
     case WM_SYSCOMMAND:
@@ -107,6 +108,7 @@ LRESULT WindowsWindow::MsgProc(HWND hWnd, UINT msg, WPARAM wParam,
     case WM_LBUTTONUP:
         msgHandler->OnLeftMouseUp();
         break;
+
     case WM_RBUTTONDOWN:
         msgHandler->OnRightMouseDown();
         break;

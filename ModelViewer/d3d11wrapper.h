@@ -12,10 +12,11 @@
 #include <directxtk/SimpleMath.h>
 
 // 향후 wrapper나 다른 구현으로 변화해야한다면 여기에 추가하자.
-using Microsoft::WRL::ComPtr;
 using DirectX::SimpleMath::Matrix;
-using DirectX::SimpleMath::Vector3;
+using DirectX::SimpleMath::Quaternion;
 using DirectX::SimpleMath::Vector2;
+using DirectX::SimpleMath::Vector3;
+using Microsoft::WRL::ComPtr;
 
 // device
 using Device = ComPtr<ID3D11Device>;
@@ -40,7 +41,7 @@ using TextureBuffer1D = ComPtr<ID3D11Texture1D>;
 using TextureBuffer2D = ComPtr<ID3D11Texture2D>;
 using TextureBuffer3D = ComPtr<ID3D11Texture3D>;
 
-//state
+// state
 using BlendState = ComPtr<ID3D11BlendState>;
 using DepthStencilState = ComPtr<ID3D11DepthStencilState>;
 using RasterizerState = ComPtr<ID3D11RasterizerState>;

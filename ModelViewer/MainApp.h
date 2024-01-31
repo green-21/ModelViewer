@@ -22,6 +22,8 @@ private:
     void createPSO();
     void defaultUpdate(Model &model);
 
+    void cameraUpdate(float dt);
+
 
 private:
     GraphicsPipelineStateObject defaultPSO;

@@ -9,7 +9,8 @@ class MessageHandler {
 public:
     MessageHandler(bool &quitRequest)
         : quitRequest(quitRequest), keyMap(), mouseX(0), mouseY(0),
-          isLeftMousePress(false), isRightMousePress(false), isDragStart(false) {}
+          isLeftMousePress(false), isRightMousePress(false),
+          isLeftMouseDragStart(false) {}
 
     void OnQuit() { quitRequest = 1; }
 
@@ -22,24 +23,35 @@ public:
         mouseY = y;
     }
 
-    void OnLeftMouseDown() { 
+    void OnLeftMouseDown() {
         if (!isLeftMousePress) {
-            isDragStart = true;
+            isLeftMouseDragStart = true;
         }
-        isLeftMousePress = true; 
+        isLeftMousePress = true;
     }
-    void OnLeftMouseUp() { isLeftMousePress = false; }
-    
-    void OnRightMouseDown() { isRightMousePress = true; }
-    void OnRightMouseUp() { isRightMousePress = false; }
+    void OnLeftMouseUp() {
+        isLeftMousePress = false;
+        isLeftMouseDragStart = false;
+    }
+
+    void OnRightMouseDown() {
+        if (!isRightMousePress) {
+            isRightMouseDragStart = true;
+        }
+        isRightMousePress = true;
+    }
+    void OnRightMouseUp() {
+        isRightMousePress = false;
+    }
 
     bool IsLeftMousePress() { return isLeftMousePress; }
     bool IsRightMousePress() { return isRightMousePress; }
-    bool IsDragStart() { 
-        bool drag = isDragStart;
-        isDragStart = false;
-        return drag;
-    }
+
+    bool IsLeftMouseDragStart() { return isLeftMouseDragStart; }
+    bool IsRightMouseDragStart() { return isRightMouseDragStart; }
+
+    void OffLeftMouseDragStart() { isLeftMouseDragStart = false; }
+    void OffRightMouseDragStart() { isRightMouseDragStart = false; }
 
     int GetMousePosX() { return mouseX; }
     int GetMousePosY() { return mouseY; }
@@ -49,5 +61,6 @@ private:
     std::array<int, 255> keyMap;
 
     int mouseX, mouseY;
-    bool isLeftMousePress, isRightMousePress, isDragStart;
+    bool isLeftMousePress, isRightMousePress;
+    bool isLeftMouseDragStart, isRightMouseDragStart;
 };

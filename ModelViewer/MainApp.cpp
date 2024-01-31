@@ -24,13 +24,14 @@ int MainApp::Load() {
 }
 
 void MainApp::Update(float dt) {
-    ui.Update();
-    if (msgHandler->IsLeftMousePress()) {
-        std::cout << "마우스 왼쪽 버튼 눌림" << std::endl;
+    if (msgHandler->IsKeyPress(KeyCode::ESC)) {
+        msgHandler->OnQuit();
     }
 
-    if (msgHandler->IsKeyPress(KeyCode::A)) {
-        std::cout << "마우스 왼쪽 버튼 눌림" << std::endl;
+    ui.UpdateCameraPos(camera.GetEyePos());
+    ui.Update();
+    if (msgHandler->IsLeftMousePress()) {
+        cameraUpdate(dt);
     }
 
     defaultUpdate(boxModel);
@@ -154,4 +155,37 @@ void MainApp::defaultUpdate(Model &model) {
 
     matrices.Transpose();
     renderer->UpdateBuffer(model.transformationBuffer, matrices);
+}
+
+void printVector(const std::string &text, Vector3 &v) {
+    std::cout << "[" << text << "] " << v.x << ", " << v.y << ", " << v.z
+              << std::endl;
+}
+
+void MainApp::cameraUpdate(float dt) {
+    static Vector3 prevCursorPos;
+    const Vector3 origin = camera.GetEyeAt();
+
+    // ndc로 변환
+    Vector3 ndcCursorPos(0.0f);
+    ndcCursorPos.x =
+        2.0 * float(msgHandler->GetMousePosX()) / screenWidth - 1.0f;
+    ndcCursorPos.y =
+        1.0f - 2.0 * float(msgHandler->GetMousePosY()) / screenHeight;
+
+    // 아직 드래그가 아니라면 prev를 최신화
+    if (msgHandler->IsLeftMouseDragStart()) {
+        msgHandler->OffLeftMouseDragStart();
+        prevCursorPos = ndcCursorPos;
+        return;
+    }
+
+    Vector3 dir = (prevCursorPos - ndcCursorPos);
+    if (dir.Length() >= 1e-2) {
+        dir.Normalize();
+        //printVector("Normal Dir", dir);
+        camera.Move(dir, dt, 20.0f);
+        const Vector3 pos = camera.GetEyePos();
+        prevCursorPos = ndcCursorPos;
+    }
 }
