@@ -30,10 +30,8 @@ void MainApp::Update(float dt) {
 
     ui.UpdateCameraPos(camera.GetPos());
     ui.Update();
-    if (msgHandler->IsLeftMousePress()) {
-        cameraUpdate(dt);
-    }
 
+    cameraUpdate(dt);
 
     defaultUpdate(boxModel);
     defaultUpdate(duckModel);
@@ -166,20 +164,32 @@ void printVector(const std::string &text, Vector3 &v) {
 void MainApp::cameraUpdate(float dt) {
     static Vector3 prevCursorPos;
 
-    Vector3 currentCursorPos(0.0f);
-    currentCursorPos.x = float(msgHandler->GetMousePosX()) / screenWidth;
-    currentCursorPos.y = float(msgHandler->GetMousePosY()) / screenHeight;
+    // wheel
+    const int wheel = msgHandler->GetWheelMouse();
 
-    if (msgHandler->IsLeftMouseDragStart()) {
-        msgHandler->OffLeftMouseDragStart();
-        prevCursorPos = currentCursorPos;
-        return;
+    if (wheel > 0) {
+        camera.ZoomIn();
+    } else if (wheel < 0) {
+        camera.ZoomOut();
     }
 
-    Vector3 delta = (prevCursorPos - currentCursorPos);
-    if (delta.Length() >= 1e-4) {
-        delta.Normalize();
-        camera.Move(delta, dt);
-        prevCursorPos = currentCursorPos;
+    // mouse move and rotate
+    if (msgHandler->IsLeftMousePress()) {
+        Vector3 currentCursorPos(0.0f);
+        currentCursorPos.x = float(msgHandler->GetMousePosX()) / screenWidth;
+        currentCursorPos.y = float(msgHandler->GetMousePosY()) / screenHeight;
+
+        if (msgHandler->IsLeftMouseDragStart()) {
+            msgHandler->OffLeftMouseDragStart();
+            prevCursorPos = currentCursorPos;
+            return;
+        }
+
+        Vector3 delta = (prevCursorPos - currentCursorPos);
+        if (delta.Length() >= 1e-4) {
+            delta.Normalize();
+            camera.Move(delta, dt);
+            prevCursorPos = currentCursorPos;
+        }
     }
 }

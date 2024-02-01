@@ -40,9 +40,9 @@ public:
         }
         isRightMousePress = true;
     }
-    void OnRightMouseUp() {
-        isRightMousePress = false;
-    }
+    void OnRightMouseUp() { isRightMousePress = false; }
+
+    void OnWheelMouse(int wheel) { mouseWheel = wheel; }
 
     bool IsLeftMousePress() { return isLeftMousePress; }
     bool IsRightMousePress() { return isRightMousePress; }
@@ -55,12 +55,19 @@ public:
 
     int GetMousePosX() { return mouseX; }
     int GetMousePosY() { return mouseY; }
+    
+    int GetWheelMouse() { 
+        int result = mouseWheel;
+        mouseWheel = 0;
+        return result; 
+    }
 
-private:
+    private:
     bool &quitRequest;
     std::array<int, 255> keyMap;
 
     int mouseX, mouseY;
+    int mouseWheel = 0;
     bool isLeftMousePress, isRightMousePress;
     bool isLeftMouseDragStart, isRightMouseDragStart;
 };

@@ -38,13 +38,10 @@ void Camera::Move(Vector3 delta, float dt) {
 
     delta = delta * dt * orbitSpeed;
 
-    std::cout << pos.Dot(up) << std::endl;
+    //std::cout << pos.Dot(up) << std::endl;
 
-    Matrix yawMatrix = Matrix();
-    if (abs(pos.Dot(up) - pos.Length()) >= 1.0f) {
-        yawMatrix = Matrix::CreateFromQuaternion(
-            Quaternion::CreateFromAxisAngle(up, -delta.x));
-    }
+    Matrix yawMatrix = Matrix::CreateFromQuaternion(
+        Quaternion::CreateFromAxisAngle(up, -delta.x));
 
     Matrix pitchMatrix = Matrix::CreateFromQuaternion(
         Quaternion::CreateFromAxisAngle(right, -delta.y));
@@ -55,14 +52,14 @@ void Camera::Move(Vector3 delta, float dt) {
 }
 
 void Camera::ZoomIn() {
-    if (pos.Length() >= minZoomDist)
+    if (pos.Length() <= minZoomDist)
         return;
 
     pos -= pos * zoomSpeed;
 }
 
 void Camera::ZoomOut() {
-    if (pos.Length() <= maxZoomDist)
+    if (pos.Length() >= maxZoomDist)
         return;
 
     pos += pos * zoomSpeed;

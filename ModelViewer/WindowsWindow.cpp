@@ -121,6 +121,11 @@ LRESULT WindowsWindow::MsgProc(HWND hWnd, UINT msg, WPARAM wParam,
     case WM_KEYUP:
         this->msgHandler->OnKeyUp(static_cast<int>(wParam));
         break;
+
+    case WM_MOUSEWHEEL:
+        this->msgHandler->OnWheelMouse(
+            static_cast<int>(GET_WHEEL_DELTA_WPARAM(wParam)));
+        break;
     case WM_DESTROY:
         ::PostQuitMessage(0);
         this->msgHandler->OnQuit();
