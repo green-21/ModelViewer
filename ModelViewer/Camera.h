@@ -6,23 +6,30 @@ class Camera {
 public:
     Camera(int width, int height);
     
-    const Vector3& GetEyePos() { return eyePos; }
-    const Vector3& GetEyeAt() { return eyeAt; }
-    const Vector3& GetUpVector() { return upVector; }
+    const Vector3& GetPos() { return pos; }
+    const Vector3& GetTargetPoint() { return targetPoint; }
+    const Vector3& GetUpVector() { return up; }
 
     Matrix GetViewMatrix();
     Matrix GetProjectionMatrix();
+    float GetDistanceFromTarget() { return distance; }
     void SetAspect(int width, int height);
-    void Move(Vector3 q, float dt, float speed);
-
+    void Move(Vector3 q, float dt);
+    void ZoomIn();
+    void ZoomOut();
 
 private:
-    Vector3 eyePos;
-    Vector3 eyeAt;
-    Vector3 upVector;
-    float fovY;
-    float nearZ;
-    float farZ;
+    Vector3 pos{0.0f, 2.0f, -5.0f};
+    Vector3 targetPoint{0.0f, 0.0f, 0.0f};
+    Vector3 up{0.0f, 1.0f, 0.0f};
+    Vector3 right{1.0f, 0.0f, 0.0f};
+    float fovY = 70.0f;
+    float nearZ = 0.01f;
+    float farZ = 1000.0f;
     float aspectRatio;
     float distance;
+    float zoomSpeed = 0.1f;
+    float orbitSpeed = 5.0f;
+    float minZoomDist = 0.1f;
+    float maxZoomDist = 100.0f;
 };

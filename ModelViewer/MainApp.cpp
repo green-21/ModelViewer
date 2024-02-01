@@ -28,11 +28,12 @@ void MainApp::Update(float dt) {
         msgHandler->OnQuit();
     }
 
-    ui.UpdateCameraPos(camera.GetEyePos());
+    ui.UpdateCameraPos(camera.GetPos());
     ui.Update();
     if (msgHandler->IsLeftMousePress()) {
         cameraUpdate(dt);
     }
+
 
     defaultUpdate(boxModel);
     defaultUpdate(duckModel);
@@ -164,28 +165,21 @@ void printVector(const std::string &text, Vector3 &v) {
 
 void MainApp::cameraUpdate(float dt) {
     static Vector3 prevCursorPos;
-    const Vector3 origin = camera.GetEyeAt();
 
-    // ndc로 변환
-    Vector3 ndcCursorPos(0.0f);
-    ndcCursorPos.x =
-        2.0 * float(msgHandler->GetMousePosX()) / screenWidth - 1.0f;
-    ndcCursorPos.y =
-        1.0f - 2.0 * float(msgHandler->GetMousePosY()) / screenHeight;
+    Vector3 currentCursorPos(0.0f);
+    currentCursorPos.x = float(msgHandler->GetMousePosX()) / screenWidth;
+    currentCursorPos.y = float(msgHandler->GetMousePosY()) / screenHeight;
 
-    // 아직 드래그가 아니라면 prev를 최신화
     if (msgHandler->IsLeftMouseDragStart()) {
         msgHandler->OffLeftMouseDragStart();
-        prevCursorPos = ndcCursorPos;
+        prevCursorPos = currentCursorPos;
         return;
     }
 
-    Vector3 dir = (prevCursorPos - ndcCursorPos);
-    if (dir.Length() >= 1e-2) {
-        dir.Normalize();
-        //printVector("Normal Dir", dir);
-        camera.Move(dir, dt, 20.0f);
-        const Vector3 pos = camera.GetEyePos();
-        prevCursorPos = ndcCursorPos;
+    Vector3 delta = (prevCursorPos - currentCursorPos);
+    if (delta.Length() >= 1e-4) {
+        delta.Normalize();
+        camera.Move(delta, dt);
+        prevCursorPos = currentCursorPos;
     }
 }
