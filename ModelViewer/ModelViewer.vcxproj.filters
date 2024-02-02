@@ -28,6 +28,9 @@
     <ClCompile Include="MeshGenerator.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>back</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="back">
@@ -102,6 +105,10 @@
     </ClInclude>
     <ClInclude Include="MeshGenerator.h">
       <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyCode.h" />
+    <ClInclude Include="Timer.h">
+      <Filter>back</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

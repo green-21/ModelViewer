@@ -186,7 +186,7 @@ void MainApp::cameraUpdate(float dt) {
         }
 
         Vector3 delta = (prevCursorPos - currentCursorPos);
-        if (delta.Length() >= 1e-4) {
+        if (delta.Length() >= 1e-5) {
             delta.Normalize();
             camera.Move(delta, dt);
             prevCursorPos = currentCursorPos;

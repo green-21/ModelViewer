@@ -4,10 +4,6 @@
 #include <iostream>
 
 Camera::Camera(int width, int height) : distance(pos.Length()) {
-    Vector3 dir = (targetPoint - pos);
-    // up = dir.Cross(right);
-    // up.Normalize();
-
     SetAspect(width, height);
 }
 
@@ -24,31 +20,27 @@ void Camera::SetAspect(int width, int height) {
     aspectRatio = float(width) / float(height);
 }
 
-float ClampAngle(float angle, float min, float max) {
-    if (angle < -360.0f)
-        angle += 360.0f;
-
-    if (angle > 360.0f)
-        angle -= 360.0f;
-    return std::clamp(angle, min, max);
-}
-
 // dir is currentNdcPos - prevNdcPos
 void Camera::Move(Vector3 delta, float dt) {
+    const Vector3 yAxis{0.0f, 1.0f, 0.0f};
 
     delta = delta * dt * orbitSpeed;
 
-    //std::cout << pos.Dot(up) << std::endl;
+    if (yDir * up.Dot(yAxis) > 0) {
+        yDir = -yDir;
+    }
 
     Matrix yawMatrix = Matrix::CreateFromQuaternion(
-        Quaternion::CreateFromAxisAngle(up, -delta.x));
+        Quaternion::CreateFromAxisAngle(yAxis, yDir*delta.x));
 
     Matrix pitchMatrix = Matrix::CreateFromQuaternion(
         Quaternion::CreateFromAxisAngle(right, -delta.y));
     pos = Vector3::Transform(pos, pitchMatrix * yawMatrix);
 
     right = Vector3::Transform(right, yawMatrix);
-    // up = Vector3::Transform(up, pitchMatrix);
+
+        up = right.Cross(pos);
+        up.Normalize();
 }
 
 void Camera::ZoomIn() {
