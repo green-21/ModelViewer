@@ -32,4 +32,5 @@ private:
     float orbitSpeed = 5.0f;
     float minZoomDist = 0.1f;
     float maxZoomDist = 100.0f;
+    float yDir = -1.0f;
 };
