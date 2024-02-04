@@ -5,5 +5,6 @@
 class MeshGenerator {
 public:
     static MeshData GenerateCube();
-    static MeshData GenerateAxisGrid(const int length, const int unit);
+    static MeshData GenerateAxisGrid(const int length, const int unit, Vector3 gridColor,
+                                         float axisBrightness);
 };

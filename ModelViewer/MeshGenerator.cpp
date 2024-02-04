@@ -46,28 +46,30 @@ MeshData MeshGenerator::GenerateCube() {
     return cube;
 }
 
-MeshData MeshGenerator::GenerateAxisGrid(const int halfLength, const int unit) {
+MeshData MeshGenerator::GenerateAxisGrid(const int halfLength, const int unit,
+                                         Vector3 gridColor,
+                                         float axisBrightness) {
     MeshData grid;
 
     // XZ Grid
-    Vector3 color(0.7f);
-    for (int x = -halfLength; x <= halfLength; x += unit) {
-        Vertex v1 = {{float(x), 0.0f, float(-halfLength)}, color, {0.0f, 0.0f}};
+    for (int x = -halfLength; x <= halfLength; x += unit*10) {
+        Vertex v1 = {
+            {float(x), 0.0f, float(-halfLength)}, gridColor, {0.0f, 0.0f}};
         Vertex v2 = {{float(x), 0.0f, float(halfLength)},
-                     color,
+                     gridColor,
 
                      {0.0f, 0.0f}};
         grid.vertices.push_back(v1);
         grid.vertices.push_back(v2);
     }
 
-    for (int z = -halfLength; z <= halfLength; z += unit) {
+    for (int z = -halfLength; z <= halfLength; z += unit*10) {
         Vertex v1 = {{float(-halfLength), 0.0f, float(z)},
-                     color,
+                     gridColor,
 
                      {0.0f, 0.0f}};
         Vertex v2 = {{float(halfLength), 0.0f, float(z)},
-                     color,
+                     gridColor,
 
                      {0.0f, 0.0f}};
         grid.vertices.push_back(v1);
@@ -75,20 +77,26 @@ MeshData MeshGenerator::GenerateAxisGrid(const int halfLength, const int unit) {
     }
 
     // axis
-    grid.vertices.push_back(
-        {{float(-halfLength), 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}});
-    grid.vertices.push_back(
-        {{float(halfLength), 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}});
+    grid.vertices.push_back({{float(-halfLength), 0.0f, 0.0f},
+                             {axisBrightness, 0.0f, 0.0f},
+                             {0.0f, 0.0f}});
+    grid.vertices.push_back({{float(halfLength), 0.0f, 0.0f},
+                             {axisBrightness, 0.0f, 0.0f},
+                             {0.0f, 0.0f}});
 
-    grid.vertices.push_back(
-        {{0.0f, float(-halfLength), 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}});
-    grid.vertices.push_back(
-        {{0.0f, float(halfLength), 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}});
+    grid.vertices.push_back({{0.0f, float(-halfLength), 0.0f},
+                             {0.0f, axisBrightness, 0.0f},
+                             {0.0f, 0.0f}});
+    grid.vertices.push_back({{0.0f, float(halfLength), 0.0f},
+                             {0.0f, axisBrightness, 0.0f},
+                             {0.0f, 0.0f}});
 
-    grid.vertices.push_back(
-        {{0.0f, 0.0f, float(-halfLength)}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}});
-    grid.vertices.push_back(
-        {{0.0f, 0.0f, float(halfLength)}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}});
+    grid.vertices.push_back({{0.0f, 0.0f, float(-halfLength)},
+                             {0.0f, 0.0f, axisBrightness},
+                             {0.0f, 0.0f}});
+    grid.vertices.push_back({{0.0f, 0.0f, float(halfLength)},
+                             {0.0f, 0.0f, axisBrightness},
+                             {0.0f, 0.0f}});
 
     const int lineCount = int(grid.vertices.size());
     grid.indices.resize(lineCount);

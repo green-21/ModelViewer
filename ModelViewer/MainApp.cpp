@@ -13,6 +13,7 @@ int MainApp::Init() {
 
     createPSO();
     renderer->SetViewport(screenWidth, screenHeight);
+    renderer->SetClearColor(Vector3(0.25f));
     return 0;
 }
 
@@ -61,7 +62,7 @@ void MainApp::loadBox() {
 }
 
 void MainApp::loadGrid() {
-    MeshData gridData = MeshGenerator::GenerateAxisGrid(5000, 100);
+    MeshData gridData = MeshGenerator::GenerateAxisGrid(10000, 100, Vector3(0.35f), 0.77f);
     resourceManager->CreateModelMeshAndTexture("grid", gridData);
     gridModel = resourceManager->CreateModelFromStroageData("grid");
 }

@@ -17,7 +17,7 @@ public:
         context->OMSetRenderTargets(1, renderTargetView.GetAddressOf(),
                                       depthStencilView.Get());
     }
-
+    void SetClearColor(Vector3 color);
     void SetViewport(int width, int height);
     void SetPipelineState(const GraphicsPipelineStateObject &pso);
     void ClearScreen();
@@ -45,6 +45,7 @@ private:
     DepthStencilView depthStencilView;
 
     Viewport viewport{};
+    float clearColor[4];
 
     GraphicsPipelineStateObject pso;
 };
