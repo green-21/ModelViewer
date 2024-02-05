@@ -28,6 +28,7 @@ private:
 private:
     GraphicsPipelineStateObject defaultPSO;
     GraphicsPipelineStateObject axisPSO;
+    
     GraphicsBuffer triangle;
     Model boxModel;
     Model duckModel;

@@ -1,4 +1,5 @@
 #include "GraphicsDevice.h"
+#include "MeshGenerator.h"
 
 std::unique_ptr<Renderer>
 GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
@@ -35,9 +36,22 @@ GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
     // Renderer
     Context context;
     SwapChain swapChain;
-    RenderTargetView renderTargetView;
-    DepthStencilView depthStencilView;
+    TextureBuffer2D rawRenderBuffer;
+    RenderTargetView rawRenderTargetView;
+    ShaderResourceView rawShaderResourceView;
+
+    RenderTargetView backBufferRenderTargetView;
+
     TextureBuffer2D depthStencilBuffer;
+    DepthStencilView depthStencilView;
+    ShaderResourceView depthShaderResourceView;
+
+    TextureBuffer2D depthScreen;
+    RenderTargetView depthScreenRenderTargetView;
+
+    TextureBuffer2D depthMapBuffer;
+    DepthStencilView depthMapView;
+    ShaderResourceView depthMapShaderResourceView;
 
     HRESULT hr = D3D11CreateDeviceAndSwapChain(
         nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, creationFlags,
@@ -56,38 +70,109 @@ GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
         return nullptr;
     }
 
-    renderTargetView = CreateRenderTargetView(backBuffer);
+    backBufferRenderTargetView = CreateRenderTargetView(backBuffer);
 
-    // TODO: 해당 함수에서 분리할 수 있는 방법을 고려
-    D3D11_TEXTURE2D_DESC dsDesc{};
-    dsDesc.Width = width;
-    dsDesc.Height = height;
-    dsDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    dsDesc.SampleDesc.Count = 1;
-    dsDesc.SampleDesc.Quality = 0;
-    dsDesc.ArraySize = 1;
-    dsDesc.MipLevels = 1;
-    dsDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_DEPTH_STENCIL;
-    dsDesc.CPUAccessFlags = 0;
-    dsDesc.MiscFlags = 0;
-    dsDesc.Usage = D3D11_USAGE_DEFAULT;
+    { // raw Buffer, Views
+        D3D11_TEXTURE2D_DESC desc{};
+        backBuffer->GetDesc(&desc);
+        desc.ArraySize = 1;
+        desc.MipLevels = 1;
+        desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+        desc.CPUAccessFlags = 0;
+        desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        desc.MiscFlags = 0;
+        desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
 
-    depthStencilBuffer = CreateTextureBuffer2D(dsDesc, nullptr);
-
-    hr = this->device->CreateDepthStencilView(depthStencilBuffer.Get(), nullptr,
-                                              depthStencilView.GetAddressOf());
-    if (FAILED(hr)) {
-        std::cerr << "failed to create DepthStencilView." << std::endl;
-        return nullptr;
+        rawRenderBuffer = CreateTextureBuffer2D(desc, nullptr);
+        rawRenderTargetView = CreateRenderTargetView(rawRenderBuffer);
+        rawShaderResourceView = CreateShaderResourceView(rawRenderBuffer);
     }
 
-    return std::make_unique<Renderer>(context, swapChain, renderTargetView,
-                                      depthStencilBuffer, depthStencilView);
+    D3D11_TEXTURE2D_DESC desc{};
+    backBuffer->GetDesc(&desc);
+    desc.ArraySize = 1;
+    desc.MipLevels = 1;
+    desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    desc.CPUAccessFlags = 0;
+    desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    desc.MiscFlags = 0;
+    desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
+
+    depthScreen = CreateTextureBuffer2D(desc, nullptr);
+    depthScreenRenderTargetView = CreateRenderTargetView(depthScreen);
+
+    desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    depthStencilBuffer = CreateTextureBuffer2D(desc, nullptr);
+    depthStencilView = CreateDepthStencilView(depthStencilBuffer);
+
+    desc.Format = DXGI_FORMAT_R32_TYPELESS;
+    desc.BindFlags |= D3D11_BIND_SHADER_RESOURCE;
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+    dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+    srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MipLevels = 1;
+
+    depthMapBuffer = CreateTextureBuffer2D(desc, nullptr);
+    depthMapView = CreateDepthStencilView(dsvDesc, depthMapBuffer);
+    depthMapShaderResourceView =
+        CreateShaderResourceView(srvDesc, depthMapBuffer);
+
+    // TODO: 분리할 수 있는 방법 찾아보기
+    // GraphicsDevice와 Renderer
+    auto renderer = std::make_unique<Renderer>(context, swapChain);
+    renderer->Init(rawRenderBuffer, rawRenderTargetView, rawShaderResourceView,
+                   backBufferRenderTargetView, depthStencilBuffer,
+                   depthStencilView, depthScreen, depthScreenRenderTargetView,
+                   depthMapBuffer, depthMapView, depthMapShaderResourceView);
+
+    MeshData mesh = MeshGenerator::Square();
+    ModelMesh result;
+
+    { // vertices
+        D3D11_BUFFER_DESC desc{};
+        desc.Usage = D3D11_USAGE_IMMUTABLE;
+        desc.ByteWidth = UINT(sizeof(Vertex) * mesh.vertices.size());
+        desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        desc.CPUAccessFlags = 0;
+        desc.StructureByteStride = sizeof(Vertex);
+        result.vertices = CreateGraphicsBuffer(desc, mesh.vertices.data());
+    }
+
+    { // indices
+        D3D11_BUFFER_DESC desc{};
+        desc.Usage = D3D11_USAGE_IMMUTABLE;
+        desc.ByteWidth = UINT(sizeof(uint32_t) * mesh.indices.size());
+        desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        desc.CPUAccessFlags = 0;
+        desc.StructureByteStride = sizeof(uint32_t);
+        result.indices = CreateGraphicsBuffer(desc, mesh.indices.data());
+
+        result.indexCount = UINT(mesh.indices.size());
+    }
+    renderer->square = result;
+    return renderer;
 }
 
-DepthStencilView GraphicsDevice::CreateDepthStencilView(TextureBuffer2D buffer) {
+DepthStencilView
+GraphicsDevice::CreateDepthStencilView(TextureBuffer2D buffer) {
     DepthStencilView view;
     ThrowIfFailed(device->CreateDepthStencilView(buffer.Get(), nullptr,
+                                                 view.GetAddressOf()));
+    return view;
+}
+
+DepthStencilView
+GraphicsDevice::CreateDepthStencilView(D3D11_DEPTH_STENCIL_VIEW_DESC &desc,
+                                       TextureBuffer2D buffer) {
+    DepthStencilView view;
+    ThrowIfFailed(device->CreateDepthStencilView(buffer.Get(), &desc,
                                                  view.GetAddressOf()));
     return view;
 }
@@ -106,16 +191,27 @@ GraphicsDevice::CreateTextureBuffer2D(D3D11_TEXTURE2D_DESC &desc,
     return texture;
 }
 
-
 ShaderResourceView
 GraphicsDevice::CreateShaderResourceView(TextureBuffer2D texture) {
     ShaderResourceView view;
-    ThrowIfFailed(device->CreateShaderResourceView(texture.Get(), nullptr, view.GetAddressOf()));
+    ThrowIfFailed(device->CreateShaderResourceView(texture.Get(), nullptr,
+                                                   view.GetAddressOf()));
 
     return view;
 }
 
-RenderTargetView GraphicsDevice::CreateRenderTargetView(TextureBuffer2D buffer) {
+ShaderResourceView
+GraphicsDevice::CreateShaderResourceView(D3D11_SHADER_RESOURCE_VIEW_DESC &desc,
+                                         TextureBuffer2D texture) {
+    ShaderResourceView view;
+    ThrowIfFailed(device->CreateShaderResourceView(texture.Get(), &desc,
+                                                   view.GetAddressOf()));
+
+    return view;
+}
+
+RenderTargetView
+GraphicsDevice::CreateRenderTargetView(TextureBuffer2D buffer) {
     RenderTargetView rtv;
     ThrowIfFailed(device->CreateRenderTargetView(buffer.Get(), nullptr,
                                                  rtv.GetAddressOf()));
@@ -174,9 +270,8 @@ GraphicsBuffer GraphicsDevice::CreateGraphicsBuffer(D3D11_BUFFER_DESC &desc,
     subResourceData.SysMemSlicePitch = 0;
 
     auto *p = data ? &subResourceData : nullptr;
-    ThrowIfFailed(
-        device->CreateBuffer(&desc, p, buffer.GetAddressOf()));
-    
+    ThrowIfFailed(device->CreateBuffer(&desc, p, buffer.GetAddressOf()));
+
     return buffer;
 }
 

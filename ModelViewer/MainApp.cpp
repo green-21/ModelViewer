@@ -14,6 +14,7 @@ int MainApp::Init() {
     createPSO();
     renderer->SetViewport(screenWidth, screenHeight);
     renderer->SetClearColor(Vector3(0.25f));
+    renderer->SetCameraMatrix(device->CreateConstantBuffer(camera.GetTransformMatrix()));
     return 0;
 }
 
@@ -33,6 +34,7 @@ void MainApp::Update(float dt) {
     ui.Update();
 
     cameraUpdate(dt);
+    renderer->UpdateCameraMatrix(camera.GetTransformMatrix());
 
     defaultUpdate(boxModel);
     defaultUpdate(duckModel);
@@ -50,6 +52,8 @@ void MainApp::Draw() {
     renderer->SetPipelineState(defaultPSO);
     renderer->DrawIndexed(boxModel);
     renderer->DrawIndexed(duckModel);
+
+    renderer->PostProcess();
     ui.Draw();
 }
 
@@ -140,6 +144,51 @@ void MainApp::createPSO() {
         axisPSO.pixelShader = device->CreatePixelShader(blob);
     }
     axisPSO.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+
+    GraphicsPipelineStateObject postPSO = defaultPSO;
+
+    {
+        //D3D11_DEPTH_STENCIL_DESC desc{};
+        //desc.DepthEnable = true;
+        //desc.DepthWriteMask =
+        //    D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
+        //desc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
+
+        //postPSO.depthStencilState = device->CreateDepthStencilState(desc);
+    }
+
+    { // vertexShader & InputLayout
+
+        D3DBlob blob = ShaderCompiler::Compile(L"postVS.hlsl", "vs_5_0");
+        std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements = {
+            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
+             D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12,
+             D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24,
+             D3D11_INPUT_PER_VERTEX_DATA, 0}};
+
+        postPSO.vertexShader = device->CreateVertexShader(blob);
+        postPSO.inputLayout = device->CreateInputLayout(blob, inputElements);
+    }
+
+    { // pixelShader
+        D3DBlob blob = ShaderCompiler::Compile(L"postPS.hlsl", "ps_5_0");
+        postPSO.pixelShader = device->CreatePixelShader(blob);
+    }
+
+    { // RasterizerState
+        D3D11_RASTERIZER_DESC desc{};
+        desc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+        desc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
+        desc.FrontCounterClockwise = false;
+        desc.DepthClipEnable = false;
+        desc.MultisampleEnable = true;
+
+        postPSO.rasterizerState = device->CreateRasterizerState(desc);
+
+    }
+    renderer->SetPostRenderPSO(postPSO);
 }
 
 void MainApp::defaultUpdate(Model &model) {
@@ -149,9 +198,6 @@ void MainApp::defaultUpdate(Model &model) {
                      Matrix::CreateRotationY(ui.GetRotation().y) *
                      Matrix::CreateRotationX(ui.GetRotation().x) *
                      Matrix::CreateRotationZ(ui.GetRotation().z);
-
-    matrices.view = camera.GetViewMatrix();
-    matrices.projection = camera.GetProjectionMatrix();
 
     matrices.Transpose();
     renderer->UpdateBuffer(model.transformationBuffer, matrices);

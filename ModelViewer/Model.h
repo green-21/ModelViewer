@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 
 #include "TextureResource2D.h"
 #include "d3d11wrapper.h"
@@ -12,22 +12,27 @@ struct Vertex {
     Vector2 uv;
 };
 
-struct TransformationMatrix {
-    TransformationMatrix() {
-        model = Matrix();
-        view = Matrix();
-        projection = Matrix();
-    }
+struct CameraTransformationMatrix {
+    CameraTransformationMatrix()
+        : view(Matrix()), projection(Matrix()), invProjection(Matrix()) {}
 
     void Transpose() {
-        model = model.Transpose();
         view = view.Transpose();
         projection = projection.Transpose();
+        invProjection = invProjection.Transpose();
     }
 
-    Matrix model;
     Matrix view;
     Matrix projection;
+    Matrix invProjection;
+};
+
+struct ModelTransformationMatrix {
+    ModelTransformationMatrix() : model(Matrix()) {}
+
+    void Transpose() { model = model.Transpose(); }
+
+    Matrix model;
 };
 
 // CPU 상 존재하는 모델 데이터
@@ -53,6 +58,6 @@ struct ModelNode {
 
 struct Model {
     std::vector<ModelNode> nodes;
-    TransformationMatrix transformationMatrix;
+    ModelTransformationMatrix transformationMatrix;
     GraphicsBuffer transformationBuffer;
 };

@@ -12,27 +12,11 @@ struct VSOutput
     float2 uv : UV;
 };
 
-cbuffer CameraTransform : register(b0)
-{
-    matrix view;
-    matrix projection;
-    matrix invProjection;
-}
-
-cbuffer ModelTransform : register(b1)
-{
-    matrix model;
-};
-
 
 VSOutput main(VSInput input)
 {
     VSOutput output;
     float4 pos = float4(input.pos, 1.0);
-    pos = mul(pos, model);
-    pos = mul(pos, view);
-    pos = mul(pos, projection);
-    
     output.pos = pos;
     output.normal = input.normal;
     output.uv = input.uv;

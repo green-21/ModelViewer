@@ -5,15 +5,7 @@
 
 Camera::Camera(int width, int height) : distance(pos.Length()) {
     SetAspect(width, height);
-}
-
-Matrix Camera::GetViewMatrix() {
-    return DirectX::XMMatrixLookAtLH(pos, targetPoint, up);
-}
-
-Matrix Camera::GetProjectionMatrix() {
-    return DirectX::XMMatrixPerspectiveFovLH(DirectX::XMConvertToRadians(fovY),
-                                             aspectRatio, nearZ, farZ);
+    calculateMatrix();
 }
 
 void Camera::SetAspect(int width, int height) {
@@ -31,7 +23,7 @@ void Camera::Move(Vector3 delta, float dt) {
     }
 
     Matrix yawMatrix = Matrix::CreateFromQuaternion(
-        Quaternion::CreateFromAxisAngle(yAxis, yDir*delta.x));
+        Quaternion::CreateFromAxisAngle(yAxis, yDir * delta.x));
 
     Matrix pitchMatrix = Matrix::CreateFromQuaternion(
         Quaternion::CreateFromAxisAngle(right, -delta.y));
@@ -39,8 +31,10 @@ void Camera::Move(Vector3 delta, float dt) {
 
     right = Vector3::Transform(right, yawMatrix);
 
-        up = right.Cross(pos);
-        up.Normalize();
+    up = right.Cross(pos);
+    up.Normalize();
+
+    calculateMatrix();
 }
 
 void Camera::ZoomIn() {
@@ -48,6 +42,7 @@ void Camera::ZoomIn() {
         return;
 
     pos -= pos * zoomSpeed;
+    calculateMatrix();
 }
 
 void Camera::ZoomOut() {
@@ -55,4 +50,15 @@ void Camera::ZoomOut() {
         return;
 
     pos += pos * zoomSpeed;
+    calculateMatrix();
+}
+
+void Camera::calculateMatrix() {
+    transformMatrix.view = DirectX::XMMatrixLookAtLH(pos, targetPoint, up);
+    transformMatrix.projection = DirectX::XMMatrixPerspectiveFovLH(
+        DirectX::XMConvertToRadians(fovY), aspectRatio, nearZ, farZ);
+    transformMatrix.invProjection = transformMatrix.projection.Invert();
+    //transformMatrix.invProjection.Invert();
+
+    transformMatrix.Transpose();
 }

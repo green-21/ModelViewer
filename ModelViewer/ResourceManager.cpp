@@ -28,7 +28,7 @@ Model ResourceManager::CreateModelFromStroageData(const std::string &name) {
     desc.ByteWidth = UINT(sizeof(model.transformationMatrix));
     desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    desc.StructureByteStride = sizeof(Vertex);
+    desc.StructureByteStride = sizeof(model.transformationMatrix);
     model.transformationBuffer =
         device->CreateGraphicsBuffer(desc, &model.transformationMatrix);
     modelStorage.Insert(name, std::move(model));

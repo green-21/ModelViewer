@@ -107,3 +107,16 @@ MeshData MeshGenerator::GenerateAxisGrid(const int halfLength, const int unit,
 
     return grid;
 }
+
+MeshData MeshGenerator::Square() { MeshData square;
+    square.vertices = {
+        {{-1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+    };
+    
+    square.indices = {0, 1, 3, 1, 2, 3};
+
+    return square;
+}

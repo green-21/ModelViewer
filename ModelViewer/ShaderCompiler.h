@@ -22,7 +22,8 @@ public:
 
         if (errorBlob) {
             std::cerr << "failed to compile shader : "
-                      << errorBlob->GetBufferPointer() << std::endl;
+                      << static_cast<char *> (errorBlob->GetBufferPointer())
+                      << std::endl;
         }
 
         return shaderBlob;

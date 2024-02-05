@@ -1,22 +1,27 @@
 #pragma once
 
+#include "Model.h"
 #include "d3d11wrapper.h"
 
 class Camera {
 public:
     Camera(int width, int height);
-    
-    const Vector3& GetPos() { return pos; }
-    const Vector3& GetTargetPoint() { return targetPoint; }
-    const Vector3& GetUpVector() { return up; }
 
-    Matrix GetViewMatrix();
-    Matrix GetProjectionMatrix();
+    const Vector3 &GetPos() { return pos; }
+    const Vector3 &GetTargetPoint() { return targetPoint; }
+    const Vector3 &GetUpVector() { return up; }
+
+    Matrix GetViewMatrix() { return transformMatrix.view; }
+    Matrix GetProjectionMatrix() { return transformMatrix.projection; }
+    CameraTransformationMatrix GetTransformMatrix() { return transformMatrix; }
     float GetDistanceFromTarget() { return distance; }
     void SetAspect(int width, int height);
     void Move(Vector3 q, float dt);
     void ZoomIn();
     void ZoomOut();
+
+private:
+    void calculateMatrix();
 
 private:
     Vector3 pos{0.0f, 2.0f, -5.0f};
@@ -33,4 +38,5 @@ private:
     float minZoomDist = 0.1f;
     float maxZoomDist = 100.0f;
     float yDir = -1.0f;
+    CameraTransformationMatrix transformMatrix;
 };

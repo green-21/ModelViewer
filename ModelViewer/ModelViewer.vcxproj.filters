@@ -124,5 +124,11 @@
     <FxCompile Include="gridPS.hlsl">
       <Filter>shader</Filter>
     </FxCompile>
+    <FxCompile Include="postPS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="postVS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

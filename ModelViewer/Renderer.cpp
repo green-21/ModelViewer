@@ -1,5 +1,10 @@
 #include "Renderer.h"
 
+
+void Renderer::UpdateCameraMatrix(CameraTransformationMatrix matrix) {
+    UpdateBuffer(cameraTransformBuffer, matrix);
+}
+
 void Renderer::SetClearColor(Vector3 color) {
     clearColor[0] = color.x;
     clearColor[1] = color.y;
@@ -29,7 +34,11 @@ void Renderer::SetPipelineState(const GraphicsPipelineStateObject &pso) {
 }
 
 void Renderer::ClearScreen() {
-    context->ClearRenderTargetView(renderTargetView.Get(), clearColor);
+    context->ClearRenderTargetView(rawRenderTargetView.Get(), clearColor);
+    context->ClearRenderTargetView(depthScreenRenderTargetView.Get(),
+                                   clearColor);
+    context->ClearDepthStencilView(depthMapView.Get(), D3D11_CLEAR_DEPTH, 1.0f,
+                                   0);
     context->ClearDepthStencilView(depthStencilView.Get(),
                                    D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
                                    1.0f, 0);
@@ -39,8 +48,12 @@ void Renderer::DrawIndexed(Model &model) {
     UINT stride = sizeof(Vertex);
     UINT offset = 0;
 
-    context->VSSetConstantBuffers(0, 1,
-                                  model.transformationBuffer.GetAddressOf());
+    std::vector<ID3D11Buffer *> buffers = {cameraTransformBuffer.Get(),
+                                           model.transformationBuffer.Get()};
+    context->VSSetConstantBuffers(0, buffers.size(), buffers.data());
+
+    context->OMSetRenderTargets(1, rawRenderTargetView.GetAddressOf(),
+                                depthStencilView.Get());
     for (auto &node : model.nodes) {
         context->IASetVertexBuffers(0, 1, node.mesh.vertices.GetAddressOf(),
                                     &stride, &offset);
@@ -50,4 +63,39 @@ void Renderer::DrawIndexed(Model &model) {
         context->PSSetShaderResources(0, 1, node.texture.view.GetAddressOf());
         context->DrawIndexed(node.mesh.indexCount, 0, 0);
     }
+
+    context->OMSetRenderTargets(1, depthScreenRenderTargetView.GetAddressOf(),
+                                depthMapView.Get());
+    for (auto &node : model.nodes) {
+        context->IASetVertexBuffers(0, 1, node.mesh.vertices.GetAddressOf(),
+                                    &stride, &offset);
+
+        context->IASetIndexBuffer(node.mesh.indices.Get(), DXGI_FORMAT_R32_UINT,
+                                  0);
+        context->PSSetShaderResources(0, 1, node.texture.view.GetAddressOf());
+        context->DrawIndexed(node.mesh.indexCount, 0, 0);
+    }
+}
+
+void Renderer::PostProcess() {
+
+    context->OMSetRenderTargets(1, backBufferRenderTargetView.GetAddressOf(),
+                                nullptr);
+
+    SetPipelineState(postRenderPSO);
+    std::vector<ID3D11ShaderResourceView *>views = {rawShaderResourceView.Get(),
+                                         depthMapShaderResourceView.Get()};
+    context->PSSetShaderResources(10, UINT(views.size()), views.data());
+    context->PSSetConstantBuffers(0, 1, cameraTransformBuffer.GetAddressOf());
+
+    UINT stride = sizeof(Vertex);
+    UINT offset = 0;
+    context->IASetVertexBuffers(0, 1, square.vertices.GetAddressOf(), &stride,
+                                &offset);
+    context->IASetIndexBuffer(square.indices.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+    context->ClearRenderTargetView(backBufferRenderTargetView.Get(),
+                                   clearColor);
+
+    context->DrawIndexed(square.indexCount, 0, 0);
 }
