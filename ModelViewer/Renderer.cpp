@@ -26,6 +26,9 @@ void Renderer::SetViewport(int width, int height) {
 void Renderer::SetPipelineState(const GraphicsPipelineStateObject &pso) {
     context->VSSetShader(pso.vertexShader.Get(), 0, 0);
     context->PSSetShader(pso.pixelShader.Get(), 0, 0);
+    context->GSSetShader(pso.geometryShader.Get(), 0, 0);
+    context->HSSetShader(pso.hullShader.Get(), 0, 0);
+    context->DSSetShader(pso.domainShader.Get(), 0, 0);
     context->PSSetSamplers(0, 1, pso.samplerState.GetAddressOf());
     context->IASetInputLayout(pso.inputLayout.Get());
     context->RSSetState(pso.rasterizerState.Get());

@@ -34,6 +34,11 @@ public:
                       std::vector<D3D11_INPUT_ELEMENT_DESC> &inputElements);
     PixelShader CreatePixelShader(const D3DBlob shaderBlob);
 
+    GeometryShader CreateGeometryShader(const D3DBlob shaderBlob);
+    HullShader CreateHullShader(const D3DBlob shaderBlob);
+    DomainShader CreateDomainShader(const D3DBlob shaderBlob);
+
+
     SamplerState CreateSamplerState(D3D11_SAMPLER_DESC &desc);
 
     RasterizerState CreateRasterizerState(D3D11_RASTERIZER_DESC &desc);

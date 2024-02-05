@@ -7,6 +7,9 @@ public:
     void operator=(const GraphicsPipelineStateObject &pso) {
         vertexShader = pso.vertexShader;
         pixelShader = pso.pixelShader;
+        geometryShader = pso.geometryShader;
+        hullShader = pso.hullShader;
+        domainShader = pso.domainShader;
         rasterizerState = pso.rasterizerState;
         inputLayout = pso.inputLayout;
         samplerState = pso.samplerState;
@@ -17,6 +20,9 @@ public:
 public:
     VertexShader vertexShader;
     PixelShader pixelShader;
+    GeometryShader geometryShader;
+    HullShader hullShader;
+    DomainShader domainShader;
     RasterizerState rasterizerState;
     SamplerState samplerState;
     InputLayout inputLayout;

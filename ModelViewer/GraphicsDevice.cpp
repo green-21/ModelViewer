@@ -246,6 +246,31 @@ PixelShader GraphicsDevice::CreatePixelShader(const D3DBlob shaderBlob) {
     return ps;
 }
 
+GeometryShader GraphicsDevice::CreateGeometryShader(const D3DBlob shaderBlob) {
+    GeometryShader gs;
+    ThrowIfFailed(device->CreateGeometryShader(shaderBlob->GetBufferPointer(),
+                                               shaderBlob->GetBufferSize(),
+                                               nullptr, gs.GetAddressOf()));
+    return gs;
+}
+
+HullShader GraphicsDevice::CreateHullShader(const D3DBlob shaderBlob) {
+
+    HullShader hs;
+    ThrowIfFailed(device->CreateHullShader(shaderBlob->GetBufferPointer(),
+                                           shaderBlob->GetBufferSize(), nullptr,
+                                           hs.GetAddressOf()));
+    return hs;
+}
+
+DomainShader GraphicsDevice::CreateDomainShader(const D3DBlob shaderBlob) {
+    DomainShader ds;
+    ThrowIfFailed(device->CreateDomainShader(shaderBlob->GetBufferPointer(),
+                                             shaderBlob->GetBufferSize(),
+                                             nullptr, ds.GetAddressOf()));
+    return ds;
+}
+
 SamplerState GraphicsDevice::CreateSamplerState(D3D11_SAMPLER_DESC &desc) {
     SamplerState state;
     ThrowIfFailed(device->CreateSamplerState(&desc, state.GetAddressOf()));
