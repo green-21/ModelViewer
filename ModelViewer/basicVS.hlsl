@@ -1,3 +1,5 @@
+#include "common.hlsli"
+
 struct VSInput
 {
     float3 pos : POSITION;
@@ -11,13 +13,6 @@ struct VSOutput
     float3 normal : NORMAL;
     float2 uv : UV;
 };
-
-cbuffer CameraTransform : register(b0)
-{
-    matrix view;
-    matrix projection;
-    matrix invProjection;
-}
 
 cbuffer ModelTransform : register(b1)
 {

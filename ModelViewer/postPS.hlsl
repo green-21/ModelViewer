@@ -1,3 +1,5 @@
+#include "common.hlsli"
+
 Texture2D randeredTexture : register(t10);
 Texture2D depthMap : register(t11);
 SamplerState basicSampler : register(s0);
@@ -8,13 +10,6 @@ struct PSInput
     float3 normal : NORMAL;
     float2 uv : UV;
 };
-
-cbuffer CameraTransform : register(b0)
-{
-    matrix view;
-    matrix projection;
-    matrix invProjection;
-}
 
 float4 TexcoordToView(float2 texcoord, float z)
 {
