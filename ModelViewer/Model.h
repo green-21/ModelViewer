@@ -25,6 +25,8 @@ struct CameraTransformationMatrix {
     Matrix view;
     Matrix projection;
     Matrix invProjection;
+    Vector3 cameraPos;
+    int padding;
 };
 
 struct ModelTransformationMatrix {

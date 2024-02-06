@@ -58,7 +58,8 @@ void Camera::calculateMatrix() {
     transformMatrix.projection = DirectX::XMMatrixPerspectiveFovLH(
         DirectX::XMConvertToRadians(fovY), aspectRatio, nearZ, farZ);
     transformMatrix.invProjection = transformMatrix.projection.Invert();
-    //transformMatrix.invProjection.Invert();
+    // transformMatrix.invProjection.Invert();
 
     transformMatrix.Transpose();
+    transformMatrix.cameraPos = pos;
 }

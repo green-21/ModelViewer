@@ -34,6 +34,7 @@ void Renderer::SetPipelineState(const GraphicsPipelineStateObject &pso) {
     context->RSSetState(pso.rasterizerState.Get());
     context->IASetPrimitiveTopology(pso.primitiveTopology);
     context->OMSetDepthStencilState(pso.depthStencilState.Get(), 0);
+    context->OMSetBlendState(pso.blendState.Get(), nullptr, 0xffffffff);
 }
 
 void Renderer::ClearScreen() {
@@ -54,6 +55,9 @@ void Renderer::DrawIndexed(Model &model) {
     std::vector<ID3D11Buffer *> buffers = {cameraTransformBuffer.Get(),
                                            model.transformationBuffer.Get()};
     context->VSSetConstantBuffers(0, buffers.size(), buffers.data());
+    context->GSSetConstantBuffers(0, buffers.size(), buffers.data());
+    context->HSSetConstantBuffers(0, buffers.size(), buffers.data());
+    context->DSSetConstantBuffers(0, buffers.size(), buffers.data());
 
     context->OMSetRenderTargets(1, rawRenderTargetView.GetAddressOf(),
                                 depthStencilView.Get());

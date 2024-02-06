@@ -30,6 +30,7 @@ private:
     GraphicsPipelineStateObject axisPSO;
     
     GraphicsBuffer triangle;
+    GraphicsBuffer unit;
     Model boxModel;
     Model duckModel;
     Model gridModel;

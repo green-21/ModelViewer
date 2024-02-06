@@ -8,4 +8,5 @@ public:
     static MeshData GenerateAxisGrid(const int length, const int unit, Vector3 gridColor,
                                          float axisBrightness);
     static MeshData Square();
+    static MeshData GenerateXZSquare(const float length);
 };

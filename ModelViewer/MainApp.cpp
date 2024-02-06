@@ -14,71 +14,10 @@ int MainApp::Init() {
     createPSO();
     renderer->SetViewport(screenWidth, screenHeight);
     renderer->SetClearColor(Vector3(0.25f));
-    renderer->SetCameraMatrix(device->CreateConstantBuffer(camera.GetTransformMatrix()));
+    renderer->SetCameraMatrix(
+        device->CreateConstantBuffer(camera.GetTransformMatrix()));
+
     return 0;
-}
-
-int MainApp::Load() {
-    loadBox();
-    loadModel();
-    loadGrid();
-    return 0;
-}
-
-void MainApp::Update(float dt) {
-    if (msgHandler->IsKeyPress(KeyCode::ESC)) {
-        msgHandler->OnQuit();
-    }
-
-    ui.UpdateCameraPos(camera.GetPos());
-    ui.Update();
-
-    cameraUpdate(dt);
-    renderer->UpdateCameraMatrix(camera.GetTransformMatrix());
-
-    defaultUpdate(boxModel);
-    defaultUpdate(duckModel);
-    defaultUpdate(gridModel);
-}
-
-void MainApp::Draw() {
-    renderer->ClearScreen();
-
-    if (ui.IsRenderAxis()) {
-        renderer->SetPipelineState(axisPSO);
-        renderer->DrawIndexed(gridModel);
-    }
-
-    renderer->SetPipelineState(defaultPSO);
-    renderer->DrawIndexed(boxModel);
-    renderer->DrawIndexed(duckModel);
-
-    renderer->PostProcess();
-    ui.Draw();
-}
-
-void MainApp::loadBox() {
-    MeshData cube = MeshGenerator::GenerateCube();
-    cube.texturePath = "resource\\texture\\crate2_diffuse.png";
-
-    resourceManager->CreateModelMeshAndTexture("cube", cube);
-    boxModel = resourceManager->CreateModelFromStroageData("cube");
-}
-
-void MainApp::loadGrid() {
-    MeshData gridData = MeshGenerator::GenerateAxisGrid(10000, 100, Vector3(0.35f), 0.77f);
-    resourceManager->CreateModelMeshAndTexture("grid", gridData);
-    gridModel = resourceManager->CreateModelFromStroageData("grid");
-}
-
-void MainApp::loadModel() {
-    resourceManager->LoadModelFromFile("duck",
-                                       "resource\\gltf\\duck\\Duck.gltf");
-    // "resource\\gltf\\FlightHelmet\\FlightHelmet.gltf"
-    // "resource\\gltf\\SciFiHelmet\\SciFiHelmet.gltf"
-    // "resource\\gltf\\BarramundiFish\\BarramundiFish.gltf"
-
-    duckModel = resourceManager->UseModel("duck");
 }
 
 void MainApp::createPSO() {
@@ -135,31 +74,52 @@ void MainApp::createPSO() {
 
         defaultPSO.depthStencilState = device->CreateDepthStencilState(desc);
     }
-
     defaultPSO.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
     axisPSO = defaultPSO;
+    { // RasterizerState
+        D3D11_RASTERIZER_DESC desc{};
+        desc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
+
+        desc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
+        desc.FrontCounterClockwise = false;
+        desc.DepthClipEnable = true;
+        desc.MultisampleEnable = true;
+
+        axisPSO.rasterizerState = device->CreateRasterizerState(desc);
+    }
+    {
+        // vertex
+        // D3DBlob blob = ShaderCompiler::Compile(L"basicVS.hlsl", "vs_5_0");
+        // axisPSO.vertexShader = device->CreateVertexShader(blob);
+    }
+
     { // pixelShader
         D3DBlob blob = ShaderCompiler::Compile(L"gridPS.hlsl", "ps_5_0");
         axisPSO.pixelShader = device->CreatePixelShader(blob);
     }
-    axisPSO.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+
+    { // blend
+        D3D11_BLEND_DESC desc{};
+        desc.IndependentBlendEnable = false;
+        desc.RenderTarget[0].BlendEnable = true;
+        desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+        desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+        desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+        desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+        desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+        desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_MAX;
+        desc.RenderTarget[0].RenderTargetWriteMask =
+            D3D11_COLOR_WRITE_ENABLE_ALL;
+
+        axisPSO.blendState = device->CreateBlendState(desc);
+    }
+    axisPSO.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
     GraphicsPipelineStateObject postPSO = defaultPSO;
-
-    {
-        //D3D11_DEPTH_STENCIL_DESC desc{};
-        //desc.DepthEnable = true;
-        //desc.DepthWriteMask =
-        //    D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
-        //desc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_ALWAYS;
-
-        //postPSO.depthStencilState = device->CreateDepthStencilState(desc);
-    }
-
     { // vertexShader & InputLayout
 
-        D3DBlob blob = ShaderCompiler::Compile(L"postVS.hlsl", "vs_5_0");
+        D3DBlob blob = ShaderCompiler::Compile(L"pathThroughVS.hlsl", "vs_5_0");
         std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements = {
             {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
              D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -186,9 +146,69 @@ void MainApp::createPSO() {
         desc.MultisampleEnable = true;
 
         postPSO.rasterizerState = device->CreateRasterizerState(desc);
-
     }
     renderer->SetPostRenderPSO(postPSO);
+}
+
+int MainApp::Load() {
+    loadBox();
+    loadModel();
+    loadGrid();
+    return 0;
+}
+void MainApp::loadBox() {
+    MeshData cube = MeshGenerator::GenerateCube();
+    cube.texturePath = "resource\\texture\\crate2_diffuse.png";
+
+    resourceManager->CreateModelMeshAndTexture("cube", cube);
+    boxModel = resourceManager->CreateModelFromStroageData("cube");
+}
+
+void MainApp::loadGrid() {
+    MeshData gridData = MeshGenerator::GenerateXZSquare(500.0f);
+    resourceManager->CreateModelMeshAndTexture("grid", gridData);
+    gridModel = resourceManager->CreateModelFromStroageData("grid");
+}
+
+void MainApp::loadModel() {
+    resourceManager->LoadModelFromFile("duck",
+                                       "resource\\gltf\\duck\\Duck.gltf");
+    // "resource\\gltf\\FlightHelmet\\FlightHelmet.gltf"
+    // "resource\\gltf\\SciFiHelmet\\SciFiHelmet.gltf"
+    // "resource\\gltf\\BarramundiFish\\BarramundiFish.gltf"
+
+    duckModel = resourceManager->UseModel("duck");
+}
+
+void MainApp::Update(float dt) {
+    if (msgHandler->IsKeyPress(KeyCode::ESC)) {
+        msgHandler->OnQuit();
+    }
+
+    ui.UpdateCameraPos(camera.GetPos());
+    ui.Update();
+
+    cameraUpdate(dt);
+    renderer->UpdateCameraMatrix(camera.GetTransformMatrix());
+
+    //defaultUpdate(boxModel);
+    defaultUpdate(duckModel);
+    //defaultUpdate(gridModel);
+}
+
+void MainApp::Draw() {
+    renderer->ClearScreen();
+
+    renderer->SetPipelineState(defaultPSO);
+    //renderer->DrawIndexed(boxModel);
+    renderer->DrawIndexed(duckModel);
+
+    if (ui.IsRenderAxis()) {
+        renderer->SetPipelineState(axisPSO);
+        renderer->DrawIndexed(gridModel);
+    }
+    renderer->PostProcess();
+    ui.Draw();
 }
 
 void MainApp::defaultUpdate(Model &model) {

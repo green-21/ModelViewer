@@ -30,13 +30,13 @@ private:
     Vector3 right{1.0f, 0.0f, 0.0f};
     float fovY = 70.0f;
     float nearZ = 0.01f;
-    float farZ = 1000.0f;
+    float farZ = 500.0f;
     float aspectRatio;
     float distance;
     float zoomSpeed = 0.1f;
     float orbitSpeed = 5.0f;
     float minZoomDist = 0.1f;
-    float maxZoomDist = 100.0f;
+    float maxZoomDist = 700.0f;
     float yDir = -1.0f;
     CameraTransformationMatrix transformMatrix;
 };

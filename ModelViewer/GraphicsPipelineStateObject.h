@@ -15,6 +15,7 @@ public:
         samplerState = pso.samplerState;
         primitiveTopology = pso.primitiveTopology;
         depthStencilState = pso.depthStencilState;
+        blendState = pso.blendState;
     }
 
 public:
@@ -28,4 +29,6 @@ public:
     InputLayout inputLayout;
     DepthStencilState depthStencilState;
     D3D11_PRIMITIVE_TOPOLOGY primitiveTopology;
+    BlendState blendState;
+    float blendFactor[4];
 };

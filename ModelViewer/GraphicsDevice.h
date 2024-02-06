@@ -43,6 +43,8 @@ public:
 
     RasterizerState CreateRasterizerState(D3D11_RASTERIZER_DESC &desc);
 
+    BlendState CreateBlendState(D3D11_BLEND_DESC &desc);
+
     template <typename T> GraphicsBuffer CreateConstantBuffer(const T& data) {
         D3D11_BUFFER_DESC desc;
         desc.ByteWidth = sizeof(data);

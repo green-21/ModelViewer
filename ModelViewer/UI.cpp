@@ -30,7 +30,6 @@ void UI::Update() {
     ImGui::Text("[FPS] %.1f", ImGui::GetIO().Framerate);
     ImGui::Checkbox("axis line", &isRenderAxis);
     ImGui::Text("(%.3f, %.3f, %3f)", cameraPos.x, cameraPos.y, cameraPos.z);
-    //ImGui::SliderFloat3(u8"pos", &transform.x, -1.0f, 1.0f);
     //ImGui::SliderFloat3(u8"rotate", &rotation.x, -3.14f, 3.14f);
     ImGui::SliderFloat(u8"scale", &scale, 0.0f, 3.0f);
     ImGui::End();

@@ -113,6 +113,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.clang-format" />
+    <None Include="common.hlsli">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="basicVS.hlsl">
@@ -127,7 +130,10 @@
     <FxCompile Include="postPS.hlsl">
       <Filter>shader</Filter>
     </FxCompile>
-    <FxCompile Include="postVS.hlsl">
+    <FxCompile Include="pathThroughVS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="gridVS.hlsl">
       <Filter>shader</Filter>
     </FxCompile>
   </ItemGroup>

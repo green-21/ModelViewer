@@ -69,6 +69,7 @@ GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
         std::cerr << "failed to get backBuffer from swapChain." << std::endl;
         return nullptr;
     }
+ 
 
     backBufferRenderTargetView = CreateRenderTargetView(backBuffer);
 
@@ -283,6 +284,12 @@ GraphicsDevice::CreateRasterizerState(D3D11_RASTERIZER_DESC &desc) {
     RasterizerState state;
     ThrowIfFailed(device->CreateRasterizerState(&desc, state.GetAddressOf()));
 
+    return state;
+}
+
+BlendState GraphicsDevice::CreateBlendState(D3D11_BLEND_DESC &desc) {
+    BlendState state;
+    ThrowIfFailed(device->CreateBlendState(&desc, state.GetAddressOf()));
     return state;
 }
 

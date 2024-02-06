@@ -11,30 +11,13 @@ struct PSInput
     float2 uv : UV;
 };
 
-float4 TexcoordToView(float2 texcoord, float z)
-{
-    float4 ndcPos;
-    
-    // uv -> ndc
-    ndcPos.xy = texcoord * 2.0 - 1.0;
-    ndcPos.y *= -1;
-    ndcPos.z = z;
-    ndcPos.w = 1.0;
-
-    // ndc -> world
-    float4 viewPos = mul(ndcPos, invProjection);
-    viewPos.xyz /= viewPos.w;
-    
-    return viewPos;
-}
-
 float4 main(PSInput input) : SV_Target
 {
-    float r = depthMap.Sample(basicSampler, input.uv).r;\
+    float r = depthMap.Sample(basicSampler, input.uv).r;
     
     // TODO: Magic number;
-    float z = clamp(1 - length(TexcoordToView(input.uv, r)) * 0.008, 0.2, 1.0);
     float4 color = randeredTexture.Sample(basicSampler, input.uv);
-    color.xyz *= z;
-    return color;
+    float z = clamp(1 - length(TexcoordToView(input.uv, r)) * 0.008, 0.0, 1.0);
+    
+    return lerp(float4(0.3, 0.3, 0.3, 1.0), color, z);
 }
