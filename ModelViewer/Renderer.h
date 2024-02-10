@@ -34,9 +34,7 @@ public:
                                     depthStencilView.Get());
     }
 
-    void SetCameraMatrix(GraphicsBuffer buffer) {
-        cameraTransformBuffer = buffer;
-    }
+    void SetCameraMatrix(GraphicsBuffer buffer, UINT slot=0);
     void UpdateCameraMatrix(CameraTransformationMatrix matrix);
     void SetClearColor(Vector3 color);
     void SetViewport(int width, int height);
@@ -60,7 +58,11 @@ public:
 
     auto GetContext() { return context.Get(); }
 
-    ModelMesh square;
+    public:
+    ModelNode square;
+
+    private:
+    void drawIndexed(ModelNode &node);
 
 private:
     Context context;
@@ -87,6 +89,7 @@ private:
     Viewport viewport{};
     float clearColor[4];
 
+    GraphicsPipelineStateObject const *pso;
     GraphicsPipelineStateObject postRenderPSO;
 
     GraphicsBuffer cameraTransformBuffer;

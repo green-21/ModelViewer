@@ -58,10 +58,12 @@ struct ModelMesh {
 struct ModelNode {
     ModelMesh mesh;
     TextureResource2D texture;
+
+    UINT stride = sizeof(Vertex);
+    UINT offset = 0;
 };
 
 struct Model {
     std::vector<ModelNode> nodes;
     ModelTransformationMatrix transformationMatrix;
-    GraphicsBuffer transformationBuffer;
-};
+}; 

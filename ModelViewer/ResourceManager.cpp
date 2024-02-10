@@ -19,18 +19,8 @@ Model ResourceManager::CreateModelFromStroageData(const std::string &name) {
         // TODO: default texture
     }
 
-    
     Model model;
     model.nodes.push_back(node);
-
-    D3D11_BUFFER_DESC desc{};
-    desc.Usage = D3D11_USAGE_DYNAMIC;
-    desc.ByteWidth = UINT(sizeof(model.transformationMatrix));
-    desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    desc.StructureByteStride = sizeof(model.transformationMatrix);
-    model.transformationBuffer =
-        device->CreateGraphicsBuffer(desc, &model.transformationMatrix);
     modelStorage.Insert(name, std::move(model));
 
     return modelStorage.Get(name);
@@ -56,16 +46,6 @@ void ResourceManager::LoadModelFromFile(const std::string &name,
 
         model.nodes.push_back(node);
     }
-
-    D3D11_BUFFER_DESC desc{};
-    desc.Usage = D3D11_USAGE_DYNAMIC;
-    desc.ByteWidth = UINT(sizeof(model.transformationMatrix));
-    desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    desc.StructureByteStride = sizeof(Vertex);
-    model.transformationBuffer =
-        device->CreateGraphicsBuffer(desc, &model.transformationMatrix);
-
     modelStorage.Insert(name, std::move(model));
 }
 

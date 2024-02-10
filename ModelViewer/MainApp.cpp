@@ -74,6 +74,8 @@ void MainApp::createPSO() {
 
         defaultPSO.depthStencilState = device->CreateDepthStencilState(desc);
     }
+    defaultPSO.vertexShaderConstantBuffers.push_back(
+        device->CreateConstantBuffer(ModelTransformationMatrix()));
     defaultPSO.primitiveTopology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
     axisPSO = defaultPSO;
@@ -220,7 +222,6 @@ void MainApp::defaultUpdate(Model &model) {
                      Matrix::CreateRotationZ(ui.GetRotation().z);
 
     matrices.Transpose();
-    renderer->UpdateBuffer(model.transformationBuffer, matrices);
 }
 
 void printVector(const std::string &text, Vector3 &v) {

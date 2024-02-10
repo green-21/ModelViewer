@@ -134,7 +134,8 @@ GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
                    depthMapBuffer, depthMapView, depthMapShaderResourceView);
 
     MeshData mesh = MeshGenerator::Square();
-    ModelMesh result;
+
+    ModelNode result;
 
     { // vertices
         D3D11_BUFFER_DESC desc{};
@@ -143,7 +144,7 @@ GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
         desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         desc.CPUAccessFlags = 0;
         desc.StructureByteStride = sizeof(Vertex);
-        result.vertices = CreateGraphicsBuffer(desc, mesh.vertices.data());
+        result.mesh.vertices = CreateGraphicsBuffer(desc, mesh.vertices.data());
     }
 
     { // indices
@@ -153,9 +154,9 @@ GraphicsDevice::InitAndCreateRenderer(HWND windowHandle, int width,
         desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
         desc.CPUAccessFlags = 0;
         desc.StructureByteStride = sizeof(uint32_t);
-        result.indices = CreateGraphicsBuffer(desc, mesh.indices.data());
+        result.mesh.indices = CreateGraphicsBuffer(desc, mesh.indices.data());
 
-        result.indexCount = UINT(mesh.indices.size());
+        result.mesh.indexCount = UINT(mesh.indices.size());
     }
     renderer->square = result;
     return renderer;

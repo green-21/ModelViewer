@@ -1,5 +1,14 @@
+#include <algorithm>
+
 #include "Renderer.h"
 
+void Renderer::SetCameraMatrix(GraphicsBuffer buffer, UINT slot) {
+    cameraTransformBuffer = buffer;
+    context->VSSetConstantBuffers(slot, 1,
+                                  cameraTransformBuffer.GetAddressOf());
+    context->PSSetConstantBuffers(slot, 1,
+                                  cameraTransformBuffer.GetAddressOf());
+}
 
 void Renderer::UpdateCameraMatrix(CameraTransformationMatrix matrix) {
     UpdateBuffer(cameraTransformBuffer, matrix);
@@ -24,6 +33,7 @@ void Renderer::SetViewport(int width, int height) {
 }
 
 void Renderer::SetPipelineState(const GraphicsPipelineStateObject &pso) {
+    this->pso = &pso;
     context->VSSetShader(pso.vertexShader.Get(), 0, 0);
     context->PSSetShader(pso.pixelShader.Get(), 0, 0);
     context->GSSetShader(pso.geometryShader.Get(), 0, 0);
@@ -35,6 +45,37 @@ void Renderer::SetPipelineState(const GraphicsPipelineStateObject &pso) {
     context->IASetPrimitiveTopology(pso.primitiveTopology);
     context->OMSetDepthStencilState(pso.depthStencilState.Get(), 0);
     context->OMSetBlendState(pso.blendState.Get(), nullptr, 0xffffffff);
+
+    // TODO: 코드 개선 할 방법 찾아보기....
+    std::vector<ID3D11Buffer *> vs(pso.vertexShaderConstantBuffers.size());
+    std::transform(pso.vertexShaderConstantBuffers.begin(),
+                   pso.vertexShaderConstantBuffers.end(), vs.begin(),
+                   [](const GraphicsBuffer &ptr) { return ptr.Get(); });
+    context->VSSetConstantBuffers(1, UINT(vs.size()), vs.data());
+
+    std::vector<ID3D11Buffer *> ps(pso.pixelShaderConstantBuffers.size());
+    std::transform(pso.pixelShaderConstantBuffers.begin(),
+                   pso.pixelShaderConstantBuffers.end(), ps.begin(),
+                   [](const GraphicsBuffer &ptr) { return ptr.Get(); });
+    context->VSSetConstantBuffers(1, UINT(ps.size()), ps.data());
+
+    std::vector<ID3D11Buffer *> gs(pso.geometryShaderConstantBuffers.size());
+    std::transform(pso.geometryShaderConstantBuffers.begin(),
+                   pso.geometryShaderConstantBuffers.end(), gs.begin(),
+                   [](const GraphicsBuffer &ptr) { return ptr.Get(); });
+    context->VSSetConstantBuffers(1, UINT(gs.size()), gs.data());
+
+    std::vector<ID3D11Buffer *> hs(pso.hullShaderConstantBuffers.size());
+    std::transform(pso.hullShaderConstantBuffers.begin(),
+                   pso.hullShaderConstantBuffers.end(), hs.begin(),
+                   [](const GraphicsBuffer &ptr) { return ptr.Get(); });
+    context->VSSetConstantBuffers(1, UINT(hs.size()), hs.data());
+
+    std::vector<ID3D11Buffer *> ds(pso.domainShaderConstantBuffers.size());
+    std::transform(pso.domainShaderConstantBuffers.begin(),
+                   pso.domainShaderConstantBuffers.end(), ds.begin(),
+                   [](const GraphicsBuffer &ptr) { return ptr.Get(); });
+    context->VSSetConstantBuffers(1, UINT(ds.size()), ds.data());
 }
 
 void Renderer::ClearScreen() {
@@ -49,38 +90,18 @@ void Renderer::ClearScreen() {
 }
 
 void Renderer::DrawIndexed(Model &model) {
-    UINT stride = sizeof(Vertex);
-    UINT offset = 0;
-
-    std::vector<ID3D11Buffer *> buffers = {cameraTransformBuffer.Get(),
-                                           model.transformationBuffer.Get()};
-    context->VSSetConstantBuffers(0, UINT(buffers.size()), buffers.data());
-    context->GSSetConstantBuffers(0, UINT(buffers.size()), buffers.data());
-    context->HSSetConstantBuffers(0, UINT(buffers.size()), buffers.data());
-    context->DSSetConstantBuffers(0, UINT(buffers.size()), buffers.data());
-
+    
+    UpdateBuffer(pso->vertexShaderConstantBuffers[0], model.transformationMatrix);
     context->OMSetRenderTargets(1, rawRenderTargetView.GetAddressOf(),
                                 depthStencilView.Get());
     for (auto &node : model.nodes) {
-        context->IASetVertexBuffers(0, 1, node.mesh.vertices.GetAddressOf(),
-                                    &stride, &offset);
-
-        context->IASetIndexBuffer(node.mesh.indices.Get(), DXGI_FORMAT_R32_UINT,
-                                  0);
-        context->PSSetShaderResources(0, 1, node.texture.view.GetAddressOf());
-        context->DrawIndexed(node.mesh.indexCount, 0, 0);
+        drawIndexed(node);
     }
 
     context->OMSetRenderTargets(1, depthScreenRenderTargetView.GetAddressOf(),
                                 depthMapView.Get());
     for (auto &node : model.nodes) {
-        context->IASetVertexBuffers(0, 1, node.mesh.vertices.GetAddressOf(),
-                                    &stride, &offset);
-
-        context->IASetIndexBuffer(node.mesh.indices.Get(), DXGI_FORMAT_R32_UINT,
-                                  0);
-        context->PSSetShaderResources(0, 1, node.texture.view.GetAddressOf());
-        context->DrawIndexed(node.mesh.indexCount, 0, 0);
+        drawIndexed(node);
     }
 }
 
@@ -90,19 +111,19 @@ void Renderer::PostProcess() {
                                 nullptr);
 
     SetPipelineState(postRenderPSO);
-    std::vector<ID3D11ShaderResourceView *>views = {rawShaderResourceView.Get(),
-                                         depthMapShaderResourceView.Get()};
+    std::vector<ID3D11ShaderResourceView *> views = {
+        rawShaderResourceView.Get(), depthMapShaderResourceView.Get()};
     context->PSSetShaderResources(10, UINT(views.size()), views.data());
     context->PSSetConstantBuffers(0, 1, cameraTransformBuffer.GetAddressOf());
 
-    UINT stride = sizeof(Vertex);
-    UINT offset = 0;
-    context->IASetVertexBuffers(0, 1, square.vertices.GetAddressOf(), &stride,
-                                &offset);
-    context->IASetIndexBuffer(square.indices.Get(), DXGI_FORMAT_R32_UINT, 0);
+    drawIndexed(square);
+}
 
-    context->ClearRenderTargetView(backBufferRenderTargetView.Get(),
-                                   clearColor);
+void Renderer::drawIndexed(ModelNode &node) {
+    context->IASetVertexBuffers(0, 1, node.mesh.vertices.GetAddressOf(),
+                                &node.stride, &node.offset);
 
-    context->DrawIndexed(square.indexCount, 0, 0);
+    context->IASetIndexBuffer(node.mesh.indices.Get(), DXGI_FORMAT_R32_UINT, 0);
+    context->PSSetShaderResources(0, 1, node.texture.view.GetAddressOf());
+    context->DrawIndexed(node.mesh.indexCount, 0, 0);
 }
