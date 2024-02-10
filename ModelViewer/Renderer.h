@@ -7,13 +7,7 @@
 class Renderer {
 public:
     Renderer(Context context, SwapChain swapChain)
-        : context(context), swapChain(swapChain), rawRenderBuffer(nullptr),
-          rawRenderTargetView(nullptr), rawShaderResourceView(nullptr),
-          backBufferRenderTargetView(nullptr), depthStencilBuffer(nullptr),
-          depthStencilView(nullptr), depthScreen(nullptr),
-          depthScreenRenderTargetView(nullptr), depthMapBuffer(nullptr),
-          depthMapView(nullptr), depthMapShaderResourceView(nullptr),
-          cameraTransformBuffer(nullptr) {}
+        : context(context), swapChain(swapChain){}
     void Init(TextureBuffer2D rawRenderBuffer,
               RenderTargetView rawRenderTargetView,
               ShaderResourceView rawShaderResourceView,

@@ -30,5 +30,4 @@ public:
     DepthStencilState depthStencilState;
     D3D11_PRIMITIVE_TOPOLOGY primitiveTopology;
     BlendState blendState;
-    float blendFactor[4];
 };

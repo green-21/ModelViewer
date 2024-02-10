@@ -46,7 +46,7 @@ MeshData MeshGenerator::GenerateCube() {
     return cube;
 }
 
-MeshData MeshGenerator::GenerateAxisGrid(const int halfLength, const int unit,
+MeshData MeshGenerator::GenerateAxisGrid(const float halfLength, const int unit,
                                          Vector3 gridColor,
                                          float axisBrightness) {
     MeshData grid;

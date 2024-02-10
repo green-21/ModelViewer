@@ -14,7 +14,9 @@ struct Vertex {
 
 struct CameraTransformationMatrix {
     CameraTransformationMatrix()
-        : view(Matrix()), projection(Matrix()), invProjection(Matrix()) {}
+        : view(Matrix()), projection(Matrix()), invProjection(Matrix()),
+          cameraPos(0.0f), padding(0)
+    {}
 
     void Transpose() {
         view = view.Transpose();
@@ -25,8 +27,8 @@ struct CameraTransformationMatrix {
     Matrix view;
     Matrix projection;
     Matrix invProjection;
-    Vector3 cameraPos;
-    int padding;
+    Vector3 cameraPos{0.0f};
+    int padding = 0;
 };
 
 struct ModelTransformationMatrix {
