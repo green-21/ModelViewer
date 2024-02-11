@@ -48,9 +48,11 @@ struct MeshData {
 
 // GPU 상 존재하는 모델 데이터
 // 모델은 인스턴싱을 위헤 레퍼런스로 관리할 것.
-
 struct ModelMesh {
     UINT indexCount = 0;
+    UINT stride = sizeof(Vertex);
+    UINT offset = 0;
+
     GraphicsBuffer vertices;
     GraphicsBuffer indices;
 };
@@ -58,9 +60,6 @@ struct ModelMesh {
 struct ModelNode {
     ModelMesh mesh;
     TextureResource2D texture;
-
-    UINT stride = sizeof(Vertex);
-    UINT offset = 0;
 };
 
 struct Model {

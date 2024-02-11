@@ -1,28 +1,35 @@
 #include "ResourceManager.h"
 #include "FileIO.h"
 
-void ResourceManager::CreateModelMeshAndTexture(const std::string &name,
-                                                MeshData &mesh) {
-
-    meshStorage.Insert(name, std::move(createModelMesh(mesh)));
-    if (mesh.texturePath.length() > 0)
-        LoadTextureFromFile(name, mesh.texturePath);
+ModelMesh ResourceManager::CreateMesh(const std::string &name,
+                                 const MeshData &mesh) {
+    meshStorage.Insert(name, createMesh(mesh));
+    return meshStorage.Get(name);
 }
 
-Model ResourceManager::CreateModelFromStroageData(const std::string &name) {
+Model ResourceManager::CreateModelFromStorage(
+    const std::string &name, std::vector<std::string> &&meshNames,
+    std::vector<std::string> &&textureNames) {
+    return CreateModelFromStorage(name, meshNames, textureNames);
+}
 
-    ModelNode node;
-    node.mesh = meshStorage.Get(name);
-    if (textureStorage.Exist(name)) {
-        node.texture = textureStorage.Get(name);
-    } else {
-        // TODO: default texture
+Model ResourceManager::CreateModelFromStorage(
+    const std::string &name, std::vector<std::string> &meshNames,
+    std::vector<std::string> &textureNames) {
+
+    std::vector<ModelNode> nodes;
+
+    for (auto meshName : meshNames) {
+        nodes.push_back(ModelNode());
+        nodes.back().mesh = meshStorage.Get(meshName);
     }
 
-    Model model;
-    model.nodes.push_back(node);
-    modelStorage.Insert(name, std::move(model));
+    const int size = std::min(int(textureNames.size()), int(nodes.size()));
+    for (int i = 0; i < size; i++) {
+        nodes[i].texture = textureStorage.Get(textureNames[i]);
+    }
 
+    modelStorage.Insert(name, Model{nodes});
     return modelStorage.Get(name);
 }
 
@@ -41,7 +48,7 @@ void ResourceManager::LoadModelFromFile(const std::string &name,
     Model model;
     for (auto &raw : raws) {
         ModelNode node;
-        node.mesh = createModelMesh(raw);
+        node.mesh = createMesh(raw);
         node.texture = createTexture(FileIO::ReadImage(raw.texturePath));
 
         model.nodes.push_back(node);
@@ -49,11 +56,11 @@ void ResourceManager::LoadModelFromFile(const std::string &name,
     modelStorage.Insert(name, std::move(model));
 }
 
-TextureResource2D ResourceManager::UseTexture2D(const std::string &name) {
+TextureResource2D ResourceManager::GetTexture2D(const std::string &name) {
     return textureStorage.Get(name);
 }
 
-ModelMesh ResourceManager::UseModelMesh(const std::string &name) {
+ModelMesh ResourceManager::GetMesh(const std::string &name) {
     return meshStorage.Get(name);
 }
 
@@ -61,7 +68,7 @@ Model ResourceManager::UseModel(const std::string &name) {
     return modelStorage.Get(name);
 }
 
-ModelMesh ResourceManager::createModelMesh(MeshData &mesh) {
+ModelMesh ResourceManager::createMesh(const MeshData &mesh) {
     ModelMesh result;
 
     { // vertices

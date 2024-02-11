@@ -121,7 +121,7 @@ void Renderer::PostProcess() {
 
 void Renderer::drawIndexed(ModelNode &node) {
     context->IASetVertexBuffers(0, 1, node.mesh.vertices.GetAddressOf(),
-                                &node.stride, &node.offset);
+                                &node.mesh.stride, &node.mesh.offset);
 
     context->IASetIndexBuffer(node.mesh.indices.Get(), DXGI_FORMAT_R32_UINT, 0);
     context->PSSetShaderResources(0, 1, node.texture.view.GetAddressOf());

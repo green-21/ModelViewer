@@ -159,17 +159,16 @@ int MainApp::Load() {
     return 0;
 }
 void MainApp::loadBox() {
-    MeshData cube = MeshGenerator::GenerateCube();
-    cube.texturePath = "resource\\texture\\crate2_diffuse.png";
-
-    resourceManager->CreateModelMeshAndTexture("cube", cube);
-    boxModel = resourceManager->CreateModelFromStroageData("cube");
+    resourceManager->CreateMesh("cubeMesh", MeshGenerator::GenerateCube());
+    resourceManager->LoadTextureFromFile("boxTexture", "resource\\texture\\crate2_diffuse.png");
+    boxModel = resourceManager->CreateModelFromStorage("cube", {"cubeMesh"},
+                                                       {"boxTexture"});
 }
 
 void MainApp::loadGrid() {
-    MeshData gridData = MeshGenerator::GenerateXZSquare(500.0f);
-    resourceManager->CreateModelMeshAndTexture("grid", gridData);
-    gridModel = resourceManager->CreateModelFromStroageData("grid");
+    resourceManager->CreateMesh("gridMesh",
+                                MeshGenerator::GenerateXZSquare(500.0f));
+    gridModel = resourceManager->CreateModelFromStorage("grid", {"gridMesh"}, {});
 }
 
 void MainApp::loadModel() {
