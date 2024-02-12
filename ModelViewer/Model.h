@@ -15,8 +15,7 @@ struct Vertex {
 struct CameraTransformationMatrix {
     CameraTransformationMatrix()
         : view(Matrix()), projection(Matrix()), invProjection(Matrix()),
-          cameraPos(0.0f), padding(0)
-    {}
+          cameraPos(0.0f), padding(0) {}
 
     void Transpose() {
         view = view.Transpose();
@@ -62,7 +61,21 @@ struct ModelNode {
     TextureResource2D texture;
 };
 
+// ResourceManger에서 관리되는 모델 데이터
 struct Model {
     std::vector<ModelNode> nodes;
     ModelTransformationMatrix transformationMatrix;
-}; 
+};
+
+// 실제 그려질 모델 instance
+struct ModelObject {
+    ModelObject() = default;
+    ModelObject(const char * name, Model model) : name(name), model(model) {}
+    Matrix transformMatrix() const {
+        return (Matrix::CreateTranslation(pos) * Matrix::CreateScale(scale)).Transpose();
+    }
+    std::string name;
+    Model model;
+    Vector3 pos{0.0f};
+    Vector3 scale{1.0f};
+};

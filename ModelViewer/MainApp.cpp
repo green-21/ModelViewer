@@ -3,11 +3,11 @@
 #include "MeshGenerator.h"
 
 MainApp::MainApp(int width, int height)
-    : ApplicationBase(width, height), camera(width, height) {}
+    : ApplicationBase(width, height), camera(width, height), ui(models) {}
 
 int MainApp::Init() {
     if (ui.Init(screenWidth, screenHeight, window.GetHandle(), device->Get(),
-                renderer->GetContext())) {
+                renderer->GetContext(), resourceManager)) {
         return -1;
     }
 
@@ -153,33 +153,14 @@ void MainApp::createPSO() {
 }
 
 int MainApp::Load() {
-    loadBox();
-    loadModel();
-    loadGrid();
-    return 0;
-}
-void MainApp::loadBox() {
-    resourceManager->CreateMesh("cubeMesh", MeshGenerator::GenerateCube());
-    resourceManager->LoadTextureFromFile("boxTexture", "resource\\texture\\crate2_diffuse.png");
-    boxModel = resourceManager->CreateModelFromStorage("cube", {"cubeMesh"},
-                                                       {"boxTexture"});
-}
-
-void MainApp::loadGrid() {
     resourceManager->CreateMesh("gridMesh",
                                 MeshGenerator::GenerateXZSquare(500.0f));
-    gridModel = resourceManager->CreateModelFromStorage("grid", {"gridMesh"}, {});
+    gridModel.model =
+        resourceManager->CreateModelFromStorage("grid", {"gridMesh"}, {});
+    return 0;
 }
 
-void MainApp::loadModel() {
-    resourceManager->LoadModelFromFile("duck",
-                                       "resource\\gltf\\duck\\Duck.gltf");
-    // "resource\\gltf\\FlightHelmet\\FlightHelmet.gltf"
-    // "resource\\gltf\\SciFiHelmet\\SciFiHelmet.gltf"
-    // "resource\\gltf\\BarramundiFish\\BarramundiFish.gltf"
-
-    duckModel = resourceManager->UseModel("duck");
-}
+void MainApp::loadGrid() {}
 
 void MainApp::Update(float dt) {
     if (msgHandler->IsKeyPress(KeyCode::ESC)) {
@@ -189,20 +170,24 @@ void MainApp::Update(float dt) {
     ui.UpdateCameraPos(camera.GetPos());
     ui.Update();
 
-    cameraUpdate(dt);
-    renderer->UpdateCameraMatrix(camera.GetTransformMatrix());
+    if (!ui.IsUsingUI()) {
+        cameraUpdate(dt);
+        renderer->UpdateCameraMatrix(camera.GetTransformMatrix());
+    }
 
-    //defaultUpdate(boxModel);
-    defaultUpdate(duckModel);
-    //defaultUpdate(gridModel);
+    for (auto &model : models) {
+        // todo
+    }
 }
 
 void MainApp::Draw() {
     renderer->ClearScreen();
 
     renderer->SetPipelineState(defaultPSO);
-    //renderer->DrawIndexed(boxModel);
-    renderer->DrawIndexed(duckModel);
+    for (int i = 0; i < models.size(); i++) {
+        if (ui.IsSelectedModel(i))
+            renderer->DrawIndexed(models[i]);
+    }
 
     if (ui.IsRenderAxis()) {
         renderer->SetPipelineState(axisPSO);
@@ -210,17 +195,6 @@ void MainApp::Draw() {
     }
     renderer->PostProcess();
     ui.Draw();
-}
-
-void MainApp::defaultUpdate(Model &model) {
-    auto &matrices = model.transformationMatrix;
-    matrices.model = Matrix::CreateScale(ui.Getscale()) *
-                     Matrix::CreateTranslation(ui.GetTransform()) *
-                     Matrix::CreateRotationY(ui.GetRotation().y) *
-                     Matrix::CreateRotationX(ui.GetRotation().x) *
-                     Matrix::CreateRotationZ(ui.GetRotation().z);
-
-    matrices.Transpose();
 }
 
 void printVector(const std::string &text, Vector3 &v) {

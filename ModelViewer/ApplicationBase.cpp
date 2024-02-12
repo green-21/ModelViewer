@@ -35,7 +35,7 @@ int ApplicationBase::init() {
     renderer = device->InitAndCreateRenderer(window.GetHandle(), screenWidth,
                                              screenHeight);
 
-    resourceManager = std::make_unique<ResourceManager>(device);
+    resourceManager = std::make_shared<ResourceManager>(device);
 
     if (!device || !renderer || !resourceManager)
         return -1;

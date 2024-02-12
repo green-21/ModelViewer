@@ -64,7 +64,7 @@ ModelMesh ResourceManager::GetMesh(const std::string &name) {
     return meshStorage.Get(name);
 }
 
-Model ResourceManager::UseModel(const std::string &name) {
+Model ResourceManager::GetModel(const std::string &name) {
     return modelStorage.Get(name);
 }
 

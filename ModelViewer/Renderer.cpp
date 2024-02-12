@@ -89,18 +89,18 @@ void Renderer::ClearScreen() {
                                    1.0f, 0);
 }
 
-void Renderer::DrawIndexed(Model &model) {
+void Renderer::DrawIndexed(ModelObject &obj) {
     
-    UpdateBuffer(pso->vertexShaderConstantBuffers[0], model.transformationMatrix);
+    UpdateBuffer(pso->vertexShaderConstantBuffers[0], obj.transformMatrix());
     context->OMSetRenderTargets(1, rawRenderTargetView.GetAddressOf(),
                                 depthStencilView.Get());
-    for (auto &node : model.nodes) {
+    for (auto &node : obj.model.nodes) {
         drawIndexed(node);
     }
 
     context->OMSetRenderTargets(1, depthScreenRenderTargetView.GetAddressOf(),
                                 depthMapView.Get());
-    for (auto &node : model.nodes) {
+    for (auto &node : obj.model.nodes) {
         drawIndexed(node);
     }
 }

@@ -27,7 +27,13 @@ public:
 
     TextureResource2D GetTexture2D(const std::string &name);
     ModelMesh GetMesh(const std::string &name);
-    Model UseModel(const std::string &name);
+    Model GetModel(const std::string &name);
+
+    ResourceStorage<TextureResource2D> &GetTextureStorage() {
+        return textureStorage;
+    }
+    ResourceStorage<ModelMesh> &GetMeshStorage() { return meshStorage; }
+    ResourceStorage<Model> &GetModelStorage() { return modelStorage; }
 
 private:
     ModelMesh createMesh(const MeshData &mesh);

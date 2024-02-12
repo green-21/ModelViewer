@@ -7,7 +7,7 @@
 class Renderer {
 public:
     Renderer(Context context, SwapChain swapChain)
-        : context(context), swapChain(swapChain){}
+        : context(context), swapChain(swapChain) {}
     void Init(TextureBuffer2D rawRenderBuffer,
               RenderTargetView rawRenderTargetView,
               ShaderResourceView rawShaderResourceView,
@@ -34,18 +34,21 @@ public:
                                     depthStencilView.Get());
     }
 
-    void SetCameraMatrix(GraphicsBuffer buffer, UINT slot=0);
+    void SetCameraMatrix(GraphicsBuffer buffer, UINT slot = 0);
     void UpdateCameraMatrix(CameraTransformationMatrix matrix);
     void SetClearColor(Vector3 color);
     void SetViewport(int width, int height);
     void SetPipelineState(const GraphicsPipelineStateObject &pso);
     void ClearScreen();
-    void DrawIndexed(Model &boxModel);
+    void DrawIndexed(ModelObject &obj);
     void SetPostRenderPSO(const GraphicsPipelineStateObject &pso) {
         postRenderPSO = pso;
     }
     void PostProcess();
     void Present() { swapChain->Present(1, 0); }
+    template <typename T> void UpdateBuffer(GraphicsBuffer buffer, T &&data) {
+        UpdateBuffer(buffer, data);
+    }
 
     template <typename T> void UpdateBuffer(GraphicsBuffer buffer, T &data) {
         D3D11_MAPPED_SUBRESOURCE ms;
@@ -58,10 +61,10 @@ public:
 
     auto GetContext() { return context.Get(); }
 
-    public:
+public:
     ModelNode square;
 
-    private:
+private:
     void drawIndexed(ModelNode &node);
 
 private:

@@ -39,7 +39,7 @@ protected:
     std::shared_ptr<MessageHandler> msgHandler;
     std::shared_ptr<GraphicsDevice> device;
     std::unique_ptr<Renderer> renderer;
-    std::unique_ptr<ResourceManager> resourceManager;
+    std::shared_ptr<ResourceManager> resourceManager;
     Timer timer;
 
 private:
