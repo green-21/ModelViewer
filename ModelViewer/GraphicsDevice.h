@@ -18,11 +18,13 @@ public:
                                                     int width, int height);
 
     DepthStencilView CreateDepthStencilView(TextureBuffer2D buffer);
-
+    DepthStencilView
+    CreateDepthStencilView(D3D11_DEPTH_STENCIL_VIEW_DESC &desc, TextureBuffer2D buffer);
     TextureBuffer2D CreateTextureBuffer2D(D3D11_TEXTURE2D_DESC &desc,
                                           const void *data, UINT pitch=0);
 
     ShaderResourceView CreateShaderResourceView(TextureBuffer2D texture);
+    ShaderResourceView CreateShaderResourceView(D3D11_SHADER_RESOURCE_VIEW_DESC&desc, TextureBuffer2D texture);
 
     RenderTargetView CreateRenderTargetView(TextureBuffer2D buffer);
 
@@ -32,10 +34,27 @@ public:
                       std::vector<D3D11_INPUT_ELEMENT_DESC> &inputElements);
     PixelShader CreatePixelShader(const D3DBlob shaderBlob);
 
+    GeometryShader CreateGeometryShader(const D3DBlob shaderBlob);
+    HullShader CreateHullShader(const D3DBlob shaderBlob);
+    DomainShader CreateDomainShader(const D3DBlob shaderBlob);
+
+
     SamplerState CreateSamplerState(D3D11_SAMPLER_DESC &desc);
 
     RasterizerState CreateRasterizerState(D3D11_RASTERIZER_DESC &desc);
 
+    BlendState CreateBlendState(D3D11_BLEND_DESC &desc);
+
+    template <typename T> GraphicsBuffer CreateConstantBuffer(const T& data) {
+        D3D11_BUFFER_DESC desc;
+        desc.ByteWidth = sizeof(data);
+        desc.Usage = D3D11_USAGE_DYNAMIC;
+        desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        desc.MiscFlags = 0;
+        desc.StructureByteStride = 0;
+        return CreateGraphicsBuffer(desc, &data);
+    }
     GraphicsBuffer CreateGraphicsBuffer(D3D11_BUFFER_DESC &desc,
                                         const void *data);
 

@@ -46,56 +46,60 @@ MeshData MeshGenerator::GenerateCube() {
     return cube;
 }
 
-MeshData MeshGenerator::GenerateAxisGrid(const int halfLength, const int unit) {
+MeshData MeshGenerator::GenerateAxisGrid(const float halfLength, const int unit,
+                                         Vector3 gridColor,
+                                         float axisBrightness) {
     MeshData grid;
 
-    // XZ Grid
-    Vector3 color(0.7f);
-    for (int x = -halfLength; x <= halfLength; x += unit) {
-        Vertex v1 = {{float(x), 0.0f, float(-halfLength)}, color, {0.0f, 0.0f}};
-        Vertex v2 = {{float(x), 0.0f, float(halfLength)},
-                     color,
-
-                     {0.0f, 0.0f}};
-        grid.vertices.push_back(v1);
-        grid.vertices.push_back(v2);
+    // 0 1  4 5
+    // 3 2  7 6
+    // 위와 같은 형식으로 사각형 순서로 구성
+    // 1과 4는 같은 위치에 존재.
+    const float delta = halfLength / 5;
+    const float dx[] = {0, delta, delta, 0};
+    const float dz[] = {0, 0, delta, delta};
+    for (float x = -halfLength; x < halfLength; x += delta) {
+        for (float z = -halfLength; z < halfLength; z += delta) {
+            for (int i = 0; i < 4; i++) {
+                Vertex v = {
+                    {x + dx[i], 0.0f, z + dz[i]}, gridColor, {0.0f, 0.0f}};
+                grid.vertices.push_back(v);
+            }
+        }
     }
 
-    for (int z = -halfLength; z <= halfLength; z += unit) {
-        Vertex v1 = {{float(-halfLength), 0.0f, float(z)},
-                     color,
-
-                     {0.0f, 0.0f}};
-        Vertex v2 = {{float(halfLength), 0.0f, float(z)},
-                     color,
-
-                     {0.0f, 0.0f}};
-        grid.vertices.push_back(v1);
-        grid.vertices.push_back(v2);
-    }
-
-    // axis
-    grid.vertices.push_back(
-        {{float(-halfLength), 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}});
-    grid.vertices.push_back(
-        {{float(halfLength), 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}});
-
-    grid.vertices.push_back(
-        {{0.0f, float(-halfLength), 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}});
-    grid.vertices.push_back(
-        {{0.0f, float(halfLength), 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}});
-
-    grid.vertices.push_back(
-        {{0.0f, 0.0f, float(-halfLength)}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}});
-    grid.vertices.push_back(
-        {{0.0f, 0.0f, float(halfLength)}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}});
-
-    const int lineCount = int(grid.vertices.size());
-    grid.indices.resize(lineCount);
-
-    for (int i = 0; i < lineCount; i++) {
-        grid.indices[i] = i;
+    for (uint32_t i = 0; i < grid.vertices.size(); i += 4) {
+        grid.indices.insert(grid.indices.end(),
+                            {i, i + 1, i + 1, i + 2, i + 2, i + 3, i + 3, i});
     }
 
     return grid;
+}
+
+MeshData MeshGenerator::GenerateXZSquare(const float length) {
+    MeshData square;
+
+    square.vertices = {
+        {{-length, 0.0f, length}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{length, 0.0f, length}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{length, 0.0f, -length}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-length, 0.0f, -length}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+    };
+    square.indices = {0, 1, 3, 1, 2, 3};
+
+    return square;
+}
+
+MeshData MeshGenerator::Square() {
+    MeshData square;
+    square.vertices = {
+        {{-1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{1.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+    };
+
+    square.indices = {0, 1, 3, 1, 2, 3};
+
+    return square;
 }

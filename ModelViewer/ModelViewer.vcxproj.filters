@@ -28,6 +28,9 @@
     <ClCompile Include="MeshGenerator.cpp">
       <Filter>Resource</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>back</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="back">
@@ -103,9 +106,16 @@
     <ClInclude Include="MeshGenerator.h">
       <Filter>Resource</Filter>
     </ClInclude>
+    <ClInclude Include="KeyCode.h" />
+    <ClInclude Include="Timer.h">
+      <Filter>back</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.clang-format" />
+    <None Include="common.hlsli">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="basicVS.hlsl">
@@ -115,6 +125,15 @@
       <Filter>shader</Filter>
     </FxCompile>
     <FxCompile Include="gridPS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="postPS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="pathThroughVS.hlsl">
+      <Filter>shader</Filter>
+    </FxCompile>
+    <FxCompile Include="gridVS.hlsl">
       <Filter>shader</Filter>
     </FxCompile>
   </ItemGroup>

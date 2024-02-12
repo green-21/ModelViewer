@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <string>
 
 #include "d3d11wrapper.h"
 
@@ -15,14 +15,15 @@ public:
         compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 
-        D3DCompileFromFile(filename.c_str(), nullptr, nullptr, "main",
+        D3DCompileFromFile(filename.c_str(), nullptr,
+                           D3D_COMPILE_STANDARD_FILE_INCLUDE, "main",
                            shaderType.c_str(), compileFlags, 0,
-                           shaderBlob.GetAddressOf(),
-                           errorBlob.GetAddressOf());
+                           shaderBlob.GetAddressOf(), errorBlob.GetAddressOf());
 
         if (errorBlob) {
             std::cerr << "failed to compile shader : "
-                      << errorBlob->GetBufferPointer() << std::endl;
+                      << static_cast<char *>(errorBlob->GetBufferPointer())
+                      << std::endl;
         }
 
         return shaderBlob;

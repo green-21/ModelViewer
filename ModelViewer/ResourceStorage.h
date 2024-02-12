@@ -26,6 +26,9 @@ public:
         return (iter != storage.end());
     }
 
+    auto Begin() { return storage.begin(); }
+    auto End() { return storage.end(); }
+
 private:
     std::unordered_map<std::string, T> storage;
 };

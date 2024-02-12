@@ -12,19 +12,31 @@ public:
     ResourceManager(const std::shared_ptr<GraphicsDevice> device)
         : device(device) {}
 
-    void CreateModelMeshAndTexture(const std::string &name, MeshData &mesh);
-    Model CreateModelFromStroageData(const std::string &name);
+    ModelMesh CreateMesh(const std::string &name, const MeshData &mesh);
+    Model CreateModelFromStorage(const std::string &name,
+                                 std::vector<std::string> &&meshNames,
+                                 std::vector<std::string> &&textureNames);
+    Model CreateModelFromStorage(const std::string &name,
+                                 std::vector<std::string> &meshNames,
+                                 std::vector<std::string> &textureNames);
+
     void LoadTextureFromFile(const std::string &name,
                              const std::string &filepath);
     void LoadModelFromFile(const std::string &name,
                            const std::string &filepath);
 
-    TextureResource2D UseTexture2D(const std::string &name);
-    ModelMesh UseModelMesh(const std::string &name);
-    Model UseModel(const std::string &name);
+    TextureResource2D GetTexture2D(const std::string &name);
+    ModelMesh GetMesh(const std::string &name);
+    Model GetModel(const std::string &name);
+
+    ResourceStorage<TextureResource2D> &GetTextureStorage() {
+        return textureStorage;
+    }
+    ResourceStorage<ModelMesh> &GetMeshStorage() { return meshStorage; }
+    ResourceStorage<Model> &GetModelStorage() { return modelStorage; }
 
 private:
-    ModelMesh createModelMesh(MeshData &mesh);
+    ModelMesh createMesh(const MeshData &mesh);
     TextureResource2D createTexture(Image image);
 
 private:

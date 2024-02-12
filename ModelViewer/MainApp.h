@@ -16,11 +16,8 @@ protected:
     virtual void Draw() override;
 
 private:
-    void loadBox();
     void loadGrid();
-    void loadModel();
     void createPSO();
-    void defaultUpdate(Model &model);
 
     void cameraUpdate(float dt);
 
@@ -28,10 +25,9 @@ private:
 private:
     GraphicsPipelineStateObject defaultPSO;
     GraphicsPipelineStateObject axisPSO;
-    GraphicsBuffer triangle;
-    Model boxModel;
-    Model duckModel;
-    Model gridModel;
+
+    ModelObject gridModel;
+    std::vector<ModelObject> models;
     UI ui;
     Camera camera;
 };

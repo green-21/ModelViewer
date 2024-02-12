@@ -16,6 +16,7 @@ using DirectX::SimpleMath::Matrix;
 using DirectX::SimpleMath::Quaternion;
 using DirectX::SimpleMath::Vector2;
 using DirectX::SimpleMath::Vector3;
+using DirectX::SimpleMath::Vector4;
 using Microsoft::WRL::ComPtr;
 
 // device
@@ -32,6 +33,9 @@ using Viewport = D3D11_VIEWPORT;
 // shader
 using PixelShader = ComPtr<ID3D11PixelShader>;
 using VertexShader = ComPtr<ID3D11VertexShader>;
+using GeometryShader = ComPtr<ID3D11GeometryShader>;
+using HullShader = ComPtr<ID3D11HullShader>;
+using DomainShader = ComPtr<ID3D11DomainShader>;
 
 using InputLayout = ComPtr<ID3D11InputLayout>;
 
