@@ -10,7 +10,7 @@ This is 3D Model Viewer.
   - extension: `glfw`
 - Infinity XZ grid
 - Orbit and zoom camera
-- Transformation rendered model (trnaslation, scaling)
+- Rendered model transformation ui (translation, scaling)
 
 ## Build
 This project use third party library with [vcpkg](https://github.com/microsoft/vcpkg) (classic mode).
