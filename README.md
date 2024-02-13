@@ -1,5 +1,8 @@
 This is 3D Model Viewer. 
 
+[youtube sample](https://youtu.be/ZfcPf8NxYHo)
+<img src="https://github.com/green-21/ModelViewer/assets/75987694/12723781-db7f-4753-b753-fc3292c00063"  width="600">
+
 
 ## Features
 - Load model with albedo(diffuse) texture
